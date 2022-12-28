@@ -10,10 +10,12 @@ code {
     background-color: #eee;
     padding: 2px 2px 2px 2px;
     border-radius: 5px;
+    font-size: 16px;
 }
 
 p {
     font-size: 16px;
+    /* margin-bottom: 2cm; */
 }
 
 ul {

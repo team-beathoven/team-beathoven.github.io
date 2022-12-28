@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!--Import Google Icon Font-->
+    <!--Import Google Font-->
     <link href="https://fonts.googleapis.com/css?family=JetBrains Mono" rel="stylesheet">
     <!--Import materialize.css-->
     <!-- <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/> -->
@@ -26,85 +26,177 @@
     </div>
 
     <!-- Aligning all the text with padding -->
-    <div style="padding: 25px 50px 75px 100px;">
+    <!-- <top right bottom left> -->
+    <div style="padding: 25px 100px 75px 100px;" align="justify">
     
-    <h4>Introduction</h4>
-    <p>
-    The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral, 
-    especially in terms of carrying out tasks that require precise timings and 
-    <em>GPIO</em> control. These tasks include handling communication protocols
-    such as SPI, I2C, etc. In this project, we have utilized these capabilities
-    of the PIO and the RP2040 as a whole to drive a 640x480 VGA display, and emulate
-    the famous game - <em>Piano Tiles</em> integrated with spatial audio to provide an
-    immersive experience. In the game, the user needs to intercept the falling tiles
-    on the screen using a small base tile that is as the name suggests is present at
-    the bottom of the screen. Each time a tile is intercepted a particular note is played.
-    The spatial audio like effect is created based on which side the user intercepts the tile,
-    i.e. if the tile is intercepted on the left side of the screen, the user will feel that the
-    audio is coming from the left side and vice-versa for the right side. Headphones were used
-    to implement this feature, driven using the <em>PWM</em> peripheral on the RP2040.
-    </p>
+        <h4>Introduction</h4>
+        <p>
+            The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral, 
+            especially in terms of carrying out tasks that require precise timings and 
+            <em>GPIO</em> control. These tasks include handling communication protocols
+            such as SPI, I2C, etc. In this project, we have utilized these capabilities
+            of the PIO and the RP2040 as a whole to drive a 640x480 VGA display, and emulate
+            the famous game - <em>Piano Tiles</em> integrated with spatial audio to provide an
+            immersive experience. In the game, the user needs to intercept the falling tiles
+            on the screen using a small base tile that is as the name suggests is present at
+            the bottom of the screen. Each time a tile is intercepted a particular note is played.
+            The spatial audio like effect is created based on which side the user intercepts the tile,
+            i.e. if the tile is intercepted on the left side of the screen, the user will feel that the
+            audio is coming from the left side and vice-versa for the right side. Headphones were used
+            to implement this feature, driven using the <em>PWM</em> peripheral on the RP2040.
+        </p>
 
-    <p>The repository containing the code is availabe on 
-    <code>GitHub</code> can be accessed by clicking
-    <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.</p>
+        <p>The repository containing the code is availabe on 
+        <code>GitHub</code> can be accessed by clicking
+        <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.</p>
 
-    <p>
-    To get a little motivation for diving further into this, let's have a look at
-    the end result.
-    </p>
+        <p>
+            To get a little motivation for diving further into this, let's have a look at
+            the end result.
+        </p>
 
-    <div align="center" style="margin-bottom: 2cm;">
-    <video class="responsive-video" width="960" height="720" controls>
-        <source src="./media/VGA.mov" type="video/mp4">
-    </video>
-    </div>
+        <div align="center" style="margin-bottom: 2cm;">
+        <video class="responsive-video" width="960" height="720" controls>
+            <source src="./media/VGA.mov" type="video/mp4">
+        </video>
+        </div>
 
-    <h4>Working Principle</h4>
-    
-    <p>
-    For a detailed understanding of every component we will look at each of the features incorporated
-    one by one.
+        <h4>Working Principle</h4>
+        
+        <p>
+            For a detailed understanding of every component we will look at each of the features incorporated
+            one by one.
+
+            <ul>
+                <li style="margin-bottom: 1cm;"><b>VGA</b>
+                <p style="margin-bottom: 2cm;">
+                    First up is the VGA display. The VGA protocol works based on a few very precisely timed signals/pulses, which
+                    can be seen in the figure below.
+                </p>
+                
+                <div align="center" style="margin-bottom: 2cm;">
+                    <img src="./media/protocol.png" width="720" height="480">
+                </div>
+
+                <p>
+                    Here the <code>HSYNC</code> and <code>VSYNC</code> signals play a major role in terms of communicating
+                    with the display and deciding both the temporal and spatial placement of pixels. The former has control
+                    over when a new row of pixels should be displayed, and the latter controls when a new frame needs to come
+                    in. All of this is controlled by the PIO module on the RP2040, which runs at a clock speed of 25MHz.The whole 
+                    protocol can be explained in brief as follows:
+
+                    <ol>
+                        <li> 
+                            Our display has a resolution of 640x480, as stated earlier, and hence the <code>HSYNC</code>
+                            signal as the name suggests (<em>Horizontal Sync</em>) needs to be high for 640 clock cycles.
+                        </li>
+
+                        <li>
+                            Our <code>HSYNC</code> signal is active-high and starts out as <code>HIGH</code>. During this
+                            time, the <code>R</code>, <code>G</code> and <code>B</code> pins are set to varying volatages
+                            between 0 and 0.7V, in every clock cycle.
+                        </li>
+
+                        <li>
+                            Once a row of pixels is complete, the <code>HSYNC</code> enters into its <em>front porch</em>, for
+                            which it goes to a <code>LOW</code> state for 16 clock cycles. Similarly it then moves onto the
+                            <em>sync Pulse</em> and <em>back porch</em> part of the protocol and behaves as shown in the figure
+                            above.
+                        </li>
+
+                        <li>
+                            On the other hand as stated earlier the <code>VSYNC</code> (vertical sync) controls the frame. So,
+                            during the whole <code>HSYNC</code> operation, the <code>VSYNC</code> remains <code>HIGH</code>.
+                        </li>
+
+                        <li>
+                            The <code>VSYNC</code> signal also has the <em>front porch</em>, <em>sync pulse</em>, and the 
+                            <em>back porch</em> part to it, and behaves based on the diagram displayed above, i.e. it stays
+                            at a <code>HIGH</code> state during its <em>front porch</em> for 10 lines (time needed for the
+                            <code>HSYNC</code> signal to go through 10 rows), and so on.
+                        </li>
+                    </ol>
+                </p>
+                </li>
+                
+                <li style="margin-bottom: 1cm;"><b>Joystick</b>
+                    <p style="margin-bottom: 2cm;">
+                        The Josytick is a part of the user interface and enables the user to interact with the game. We used a
+                        dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
+                        needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the axes of the
+                        joystick.
+                    </p>
+                        
+                    <div align="center" style="margin-bottom: 2cm;">
+                        <img src="./media/joystick.png" width="150" height="150">
+                    </div>
+
+                    <p>
+                        The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal obtained from
+                        the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent the 
+                        analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values from
+                        the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then the
+                        data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the joystick
+                        was determined.
+                    </p>
+                </li>
+                
+                <li style="margin-bottom: 1cm;"><b>PWM</b>
+                <p>
+                    Now we move on to the audio part of the game from the display.The RP2040 doesn't have a DAC onboard,
+                    so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the notes into
+                    a series of duty cycle values and storing it to an array, which can be accessed by the main code and played
+                    whenever a tile is intercepted. Also, note that using a single PWM cycle for each value in the array will not create
+                    a analog like sound effect, since we need some sort of persistence to emulate actual audio. Therefore, each
+                    value in the array is played for 8 cycles to emulate that persistence of sound. This will become more apparent 
+                    and clear once we take a look at the code.
+                </p>
+                </li>
+            </ul>
+        
+        </p>
+
+        <h4>Components Required</h4>
+
+            <ul>
+                <li>RP2040 based Development Board</li>
+                <li>VGA Cable</li>
+                <li>Dual-Axis Analog Joystick</li>
+                <li>Resistors - 3 (330 Ohm)</li>
+                <li>Wired Headphones</li>
+                <li>Female Audio Jack</li>
+                <li>Jumper Wires</li>
+            </ul>
+
+        <h4>Circuit Connections</h4>
+
+        <h4>Firmware</h4>
+
+        <pre>
+            <code>
+// Audio PIN is to match some of the design guide shields. 
+#define AUDIO_PIN_LEFT 28  // you can change this to whatever you like
+#define AUDIO_PIN_RIGHT 15  // you can change this to whatever you like
+#define DELAY_CYCLES 5
+            </code>
+        </pre>
+
+        <h4>Journey</h4>
+
+        <h4>Results</h4>
+        
+        <h4>Conclusion</h4>
+
+        <h4>References</h4>
 
         <ul>
-            <li><b>VGA</b>
-            <p>
-            First up is the VGA display.
-            </p>
+            <li>
+                <a href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>https://vanhunteradams.com/Pico/VGA/VGA.html</u></a>
             </li>
-            
-            <li><b>Animation</b>
-            <p>
-            
-            </p>
-            </li>
-            
-            <li><b>Joystick</b>
-            <p>
-            
-            </p>
-            </li>
-            
-            <li><b>PWM</b>
-            <p>
-            
-            </p>
-            </li>
-            
-            <li><b>Headphones and Audio</b>
-            <p>
-            
-            </p>
+            <li>
+                <a href="https://github.com/rgrosset/pico-pwm-audio"><u>https://github.com/rgrosset/pico-pwm-audio</u></a>
             </li>
         </ul>
-    
-    </p>
-
-    <h4>Components Required</h4>
-
-    <h4>Results</h4>
-    
-    <h4>Conclusion</h4>
 
     </div>
 
