@@ -12,6 +12,14 @@ code {
     border-radius: 5px;
 }
 
+p {
+    font-size: 16px;
+}
+
+ul {
+    font-size: 16px;
+}
+
 /* Commented out code block */
     /* <!-- <pre> --> */
     /* <!--     <code> --> */
