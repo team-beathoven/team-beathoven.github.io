@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!--Import Google Icon Font-->
+    <link href="https://fonts.googleapis.com/css?family=JetBrains Mono" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
+    <link type="text/css" rel="stylesheet" href="css/custom_style.css"/>
+
+    <style>
+        body {
+            font-family: 'JetBrains Mono';font-size: 16px;
+        }
+    </style>
+
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  </head>
+
+  <body>
+    <!--Main Heading-->
+    <div align="center">
+        <h2><b>ESE5190 Final Project</b></h2>
+        <h3>Falling Piano Tiles</h3>
+        <br>
+        </br>
+
+        <h6>Ruturaj A. Nanoti  &emsp; &emsp; Siddhant Mathur &emsp; &emsp; Arnav Gadre</h6>
+    </div>
+
+    <!-- Aligning all the text with padding -->
+    <div style="padding: 25px 50px 75px 100px;">
+    
+    <h4>Introduction</h4>
+    <p>
+    The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral, 
+    especially in terms of carrying out tasks that require precise timings and 
+    <em>GPIO</em> control. These tasks include handling communication protocols
+    such as SPI, I2C, etc. In this project, we have utilized these capabilities
+    of the PIO and the RP2040 as a whole to drive a 640x480 VGA display, and emulate
+    the famous game - <em>Piano Tiles</em> integrated with spatial audio to provide an
+    immersive experience. In the game, the user needs to intercept the falling tiles
+    on the screen using a small base tile that is as the name suggests is present at
+    the bottom of the screen. Each time a tile is intercepted a particular note is played.
+    The spatial audio like effect is created based on which side the user intercepts the tile,
+    i.e. if the tile is intercepted on the left side of the screen, the user will feel that the
+    audio is coming from the left side and vice-versa for the right side. Headphones were used
+    to implement this feature, driven using the <em>PWM</em> peripheral on the RP2040.
+    </p>
+
+    <p>The repository containing the code is availabe on 
+    <code>GitHub</code> can be accessed by clicking
+    <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.</p>
+
+    <p>
+    To get a little motivation for diving further into this, let's have a look at
+    the end result.
+    
+    <br>
+    </br>
+
+    <div align="center">
+    <video class="responsive-video" width="960" height="720" controls>
+        <source src="./media/VGA.mov" type="video/mp4">
+    </video>
+    </div>
+
+    </p>
+
+    <h4>Working Principle</h4>
+
+    <h4>Components Required</h4>
+
+    <h4>Results</h4>
+    
+    <h4>Conclusion</h4>
+
+    </div>
+
+    <!--JavaScript at end of body for optimized loading-->
+    <script type="text/javascript" src="js/materialize.min.js"></script>
+  </body>
+</html>

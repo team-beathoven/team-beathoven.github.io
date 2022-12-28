@@ -1,0 +1,25 @@
+pre code {
+    /* border: 1px solid #999; */
+    background-color: #eee;
+    display: block;
+    padding: 2px 2px 2px 20px;
+    border-radius: 10px;
+}
+
+code {
+    background-color: #eee;
+    padding: 2px 2px 2px 2px;
+    border-radius: 5px;
+}
+
+/* Commented out code block */
+    /* <!-- <pre> --> */
+    /* <!--     <code> --> */
+/* <!-- pre code { --> */
+    /* <!-- background-color: #eee; --> */
+    /* <!-- border: 1px solid #999; --> */
+    /* <!-- display: block; --> */
+    /* <!-- padding: 2px; --> */
+/* <!-- } --> */
+    /* <!--     </code> --> */
+    /* <!-- </pre> --> */
