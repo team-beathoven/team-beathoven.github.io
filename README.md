@@ -1,2 +1,1 @@
-# team-beathoven.github.io
-Project Website
+# Team Beathoven - Project Website
