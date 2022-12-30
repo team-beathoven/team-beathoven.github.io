@@ -49,7 +49,8 @@
         <li><a class="sidenav-close" href="#circ"><i class="material-icons">filter_4</i>Circuit Connections</a></li>
         <li><a class="sidenav-close" href="#firm"><i class="material-icons">filter_5</i>Firmware</a></li>
         <li><a class="sidenav-close" href="#jour"><i class="material-icons">filter_6</i>Journey</a></li>
-        <li><a class="sidenav-close" href="#refs"><i class="material-icons">filter_7</i>References</a></li>
+        <li><a class="sidenav-close" href="#ress"><i class="material-icons">filter_7</i>It Actually Works!</a></li>
+        <li><a class="sidenav-close" href="#refs"><i class="material-icons">filter_8</i>References</a></li>
         <li><a class="sidenav-close" href="#mtt"><i class="material-icons">group</i>Meet the Team</a></li>
     </ul>
 
@@ -114,7 +115,7 @@
             one by one.
 
             <ul>
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>VGA</b>
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>VGA (PIO Magic!)</b>
                 <p style="margin-bottom: 2cm;">
                     First up is the VGA display. The VGA protocol works based on a few very precisely timed signals/pulses, which
                     can be seen in the figure below.
@@ -236,7 +237,12 @@
                     </p>
                 </li>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #009999">#include &quot;vga_graphics.h&quot;</span>
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+                      
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #009999">#include &quot;vga_graphics.h&quot;</span>
 
 <span style="color: #009999">#include &lt;stdio.h&gt;</span>
 <span style="color: #009999">#include &lt;stdlib.h&gt;</span>
@@ -253,7 +259,262 @@
 <span style="color: #009999">#include &quot;hardware/sync.h&quot; </span><span style="color: #0099FF; font-style: italic">// wait for interrupt</span>
 
 </pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
 
+
+                  <ul class="collapsible popout">
+                    <li>
+                        <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>HSYNC</code></div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
+; HSync generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
+
+
+; Program name
+.program hsync
+
+; frontporch<span style="color: #555555">:</span> <span style="color: #FF6600">16</span> clocks (<span style="color: #FF6600">0.64</span>us at <span style="color: #FF6600">25</span>MHz)
+; sync pulse<span style="color: #555555">:</span> <span style="color: #FF6600">96</span> clocks (<span style="color: #FF6600">3.84</span>us at <span style="color: #FF6600">25</span>MHz)
+; back porch<span style="color: #555555">:</span> <span style="color: #FF6600">48</span> clocks (<span style="color: #FF6600">1.92</span>us at <span style="color: #FF6600">25</span>MHz)
+; active <span style="color: #006699; font-weight: bold">for</span><span style="color: #555555">:</span> <span style="color: #FF6600">640</span> clcks (<span style="color: #FF6600">25.6</span>us at <span style="color: #FF6600">25</span>MHz)
+;
+; High <span style="color: #006699; font-weight: bold">for</span> <span style="color: #FF6600">704</span> <span style="color: #CC00FF">cycles</span> (<span style="color: #FF6600">28.16</span>us at <span style="color: #FF6600">25</span>MHz)
+; Low  <span style="color: #006699; font-weight: bold">for</span> <span style="color: #FF6600">96</span>  <span style="color: #CC00FF">cycles</span> (<span style="color: #FF6600">3.84</span>us at <span style="color: #FF6600">25</span>MHz)
+; Total period of <span style="color: #FF6600">800</span> <span style="color: #CC00FF">cycles</span> (<span style="color: #FF6600">32u</span>s at <span style="color: #FF6600">25</span>MHz)
+;
+
+
+pull block              ; Pull from FIFO to OSR (only happens once)
+.wrap_target            ; Program wraps to here
+
+; ACTIVE <span style="color: #555555">+</span> FRONTPORCH
+mov x, osr              ; Copy value from OSR to x scratch <span style="color: #006699; font-weight: bold">register</span>
+<span style="color: #9999FF">activeporch:</span>
+   jmp x<span style="color: #555555">--</span> activeporch  ; Remain high in active mode and front porch
+
+; SYNC PULSE
+<span style="color: #9999FF">pulse:</span>
+    set pins, <span style="color: #FF6600">0</span> [<span style="color: #FF6600">31</span>]    ; Low <span style="color: #006699; font-weight: bold">for</span> hsync pulse (<span style="color: #FF6600">32</span> cycles)
+    set pins, <span style="color: #FF6600">0</span> [<span style="color: #FF6600">31</span>]    ; Low <span style="color: #006699; font-weight: bold">for</span> hsync pulse (<span style="color: #FF6600">64</span> cycles)
+    set pins, <span style="color: #FF6600">0</span> [<span style="color: #FF6600">31</span>]    ; Low <span style="color: #006699; font-weight: bold">for</span> hsync <span style="color: #CC00FF">pulse</span> (<span style="color: #FF6600">96</span> cycles)
+
+; BACKPORCH
+<span style="color: #9999FF">backporch:</span>
+    set pins, <span style="color: #FF6600">1</span> [<span style="color: #FF6600">31</span>]    ; High <span style="color: #006699; font-weight: bold">for</span> back porch (<span style="color: #FF6600">32</span> cycles)
+    set pins, <span style="color: #FF6600">1</span> [<span style="color: #FF6600">12</span>]    ; High <span style="color: #006699; font-weight: bold">for</span> back porch (<span style="color: #FF6600">45</span> cycles)
+    irq <span style="color: #FF6600">0</span>       [<span style="color: #FF6600">1</span>]     ; Set IRQ to signal end of <span style="color: #CC00FF">line</span> (<span style="color: #FF6600">47</span> cycles)
+.wrap
+
+
+
+
+
+<span style="color: #555555">%</span> c<span style="color: #555555">-</span>sdk {
+<span style="color: #006699; font-weight: bold">static</span> <span style="color: #006699; font-weight: bold">inline</span> <span style="color: #007788; font-weight: bold">void</span> hsync_program_init(PIO pio, uint sm, uint offset, uint pin) {
+
+    <span style="color: #0099FF; font-style: italic">// creates state machine configuration object c, sets</span>
+    <span style="color: #0099FF; font-style: italic">// to default configurations. I believe this function is auto-generated</span>
+    <span style="color: #0099FF; font-style: italic">// and gets a name of &lt;program name&gt;_program_get_default_config</span>
+    <span style="color: #0099FF; font-style: italic">// Yes, page 40 of SDK guide</span>
+    pio_sm_config c <span style="color: #555555">=</span> hsync_program_get_default_config(offset);
+
+    <span style="color: #0099FF; font-style: italic">// Map the state machine&#39;s SET pin group to one pin, namely the `pin`</span>
+    <span style="color: #0099FF; font-style: italic">// parameter to this function.</span>
+    sm_config_set_set_pins(<span style="color: #555555">&amp;</span>c, pin, <span style="color: #FF6600">1</span>);
+
+
+    <span style="color: #0099FF; font-style: italic">// Set clock division (div by 5 for 25 MHz state machine)</span>
+    sm_config_set_clkdiv(<span style="color: #555555">&amp;</span>c, <span style="color: #FF6600">5</span>) ;
+
+    <span style="color: #0099FF; font-style: italic">// Set this pin&#39;s GPIO function (connect PIO to the pad)</span>
+    pio_gpio_init(pio, pin);
+
+    <span style="color: #0099FF; font-style: italic">// pio_gpio_init(pio, pin+1);</span>
+    
+    <span style="color: #0099FF; font-style: italic">// Set the pin direction to output at the PIO</span>
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, <span style="color: #FF6600">1</span>, <span style="color: #336666">true</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Load our configuration, and jump to the start of the program</span>
+
+    pio_sm_init(pio, sm, offset, <span style="color: #555555">&amp;</span>c);
+
+
+    <span style="color: #0099FF; font-style: italic">// Set the state machine running (commented out so can be synchronized w/ vsync)</span>
+    <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
+}
+<span style="color: #555555">%</span>}
+</pre></div>
+
+                      </span></div>
+                    </li>
+                 </ul>
+
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>VSYNC</code></div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
+; VSync generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
+
+; Program name
+.program vsync
+.side_set <span style="color: #FF6600">1</span> opt
+
+; frontporch<span style="color: #555555">:</span> <span style="color: #FF6600">10</span>  lines
+; sync pulse<span style="color: #555555">:</span> <span style="color: #FF6600">2</span>   lines
+; back porch<span style="color: #555555">:</span> <span style="color: #FF6600">33</span>  lines (perhaps we try <span style="color: #FF6600">32</span>, since that<span style="color: #AA0000; background-color: #FFAAAA">&#39;</span>s easier)
+; active <span style="color: #006699; font-weight: bold">for</span><span style="color: #555555">:</span> <span style="color: #FF6600">480</span> lines
+;
+; Code size could be reduced with side setting
+
+
+
+pull block                        ; Pull from FIFO to OSR (only once)
+.wrap_target                      ; Program wraps to here
+
+; ACTIVE
+mov x, osr                        ; Copy value from OSR to x scratch <span style="color: #006699; font-weight: bold">register</span>
+<span style="color: #9999FF">activefront:</span>
+    wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>                  ; Wait <span style="color: #006699; font-weight: bold">for</span> hsync to go high
+    irq <span style="color: #FF6600">1</span>                         ; Signal that we<span style="color: #AA0000; background-color: #FFAAAA">&#39;</span>re in active mode
+    jmp x<span style="color: #555555">--</span> activefront           ; Remain in active mode, decrementing counter
+
+; FRONTPORCH
+set y, <span style="color: #FF6600">9</span>                          ;
+<span style="color: #9999FF">frontporch:</span>
+    wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>                  ;
+    jmp y<span style="color: #555555">--</span> frontporch            ;
+
+; SYNC PULSE
+set pins, <span style="color: #FF6600">0</span>                       ; Set pin low
+wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>                      ; Wait <span style="color: #006699; font-weight: bold">for</span> one line
+wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>                      ; Wait <span style="color: #006699; font-weight: bold">for</span> a second line
+
+; BACKPORCH
+set y, <span style="color: #FF6600">31</span>                         ; First part of back porch into y scratch <span style="color: #CC00FF">register</span> (and delays a cycle)
+;set pins, <span style="color: #FF6600">1</span>                      ; Raise high <span style="color: #006699; font-weight: bold">for</span> back porch (delaying a set cycle) <span style="color: #555555">-</span> REPLACED WITH SIDESET
+<span style="color: #9999FF">backporch:</span>
+    wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>   side <span style="color: #FF6600">1</span>         ; Wait <span style="color: #006699; font-weight: bold">for</span> hsync to go high <span style="color: #555555">-</span> SIDESET REPLACEMENT HERE
+    jmp y<span style="color: #555555">--</span> backporch             ; Remain in backporch, decrementing counter
+
+;wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">0</span>                      ; Wait <span style="color: #006699; font-weight: bold">for</span> final (<span style="color: #FF6600">33</span>rd) backporch line (eliminated)
+
+.wrap                             ; Program wraps from here
+
+
+
+<span style="color: #555555">%</span> c<span style="color: #555555">-</span>sdk {
+<span style="color: #006699; font-weight: bold">static</span> <span style="color: #006699; font-weight: bold">inline</span> <span style="color: #007788; font-weight: bold">void</span> vsync_program_init(PIO pio, uint sm, uint offset, uint pin) {
+
+    <span style="color: #0099FF; font-style: italic">// creates state machine configuration object c, sets</span>
+    <span style="color: #0099FF; font-style: italic">// to default configurations. I believe this function is auto-generated</span>
+    <span style="color: #0099FF; font-style: italic">// and gets a name of &lt;program name&gt;_program_get_default_config</span>
+    <span style="color: #0099FF; font-style: italic">// Yes, page 40 of SDK guide</span>
+    pio_sm_config c <span style="color: #555555">=</span> vsync_program_get_default_config(offset);
+
+    <span style="color: #0099FF; font-style: italic">// Map the state machine&#39;s SET pin group to one pin, namely the `pin`</span>
+
+    <span style="color: #0099FF; font-style: italic">// parameter to this function.</span>
+
+    sm_config_set_set_pins(<span style="color: #555555">&amp;</span>c, pin, <span style="color: #FF6600">1</span>);
+    sm_config_set_sideset_pins(<span style="color: #555555">&amp;</span>c, pin);
+
+    <span style="color: #0099FF; font-style: italic">// Set clock division (div by 5 for 25 MHz state machine)</span>
+    sm_config_set_clkdiv(<span style="color: #555555">&amp;</span>c, <span style="color: #FF6600">5</span>) ;
+
+    <span style="color: #0099FF; font-style: italic">// Set this pin&#39;s GPIO function (connect PIO to the pad)</span>
+    pio_gpio_init(pio, pin);
+    <span style="color: #0099FF; font-style: italic">// pio_gpio_init(pio, pin+1);</span>
+
+    
+    <span style="color: #0099FF; font-style: italic">// Set the pin direction to output at the PIO</span>
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, <span style="color: #FF6600">1</span>, <span style="color: #336666">true</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Load our configuration, and jump to the start of the program</span>
+    pio_sm_init(pio, sm, offset, <span style="color: #555555">&amp;</span>c);
+
+    <span style="color: #0099FF; font-style: italic">// Set the state machine running (commented out so can be synchronized with hsync)</span>
+    <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
+}
+<span style="color: #555555">%</span>}
+</pre></div>
+
+                      </span></div>
+                    </li>
+                 </ul>
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>RGB</code></div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
+; RGB generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
+
+; Program name
+.program rgb
+
+pull block 					; Pull from FIFO to OSR (only once)
+mov y, osr 					; Copy value from OSR to y scratch <span style="color: #006699; font-weight: bold">register</span>
+.wrap_target
+
+set pins, <span style="color: #FF6600">0</span> 				; Zero RGB pins in blanking
+mov x, y 					; Initialize counter variable
+
+wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</span> [<span style="color: #FF6600">3</span>]			; Wait <span style="color: #006699; font-weight: bold">for</span> vsync active mode (starts <span style="color: #FF6600">5</span> cycles after execution)
+
+<span style="color: #9999FF">colorout:</span>
+	pull block				; Pull color value
+	out pins, <span style="color: #FF6600">3</span>	[<span style="color: #FF6600">4</span>]			; Push out to pins (first pixel)
+	out pins, <span style="color: #FF6600">3</span>	[<span style="color: #FF6600">2</span>]			; Push out to pins (next pixel)
+	jmp x<span style="color: #555555">--</span> colorout		; Stay here thru horizontal active mode
+
+.wrap
+
+
+<span style="color: #555555">%</span> c<span style="color: #555555">-</span>sdk {
+<span style="color: #006699; font-weight: bold">static</span> <span style="color: #006699; font-weight: bold">inline</span> <span style="color: #007788; font-weight: bold">void</span> rgb_program_init(PIO pio, uint sm, uint offset, uint pin) {
+
+    <span style="color: #0099FF; font-style: italic">// creates state machine configuration object c, sets</span>
+    <span style="color: #0099FF; font-style: italic">// to default configurations. I believe this function is auto-generated</span>
+    <span style="color: #0099FF; font-style: italic">// and gets a name of &lt;program name&gt;_program_get_default_config</span>
+
+    <span style="color: #0099FF; font-style: italic">// Yes, page 40 of SDK guide</span>
+    pio_sm_config c <span style="color: #555555">=</span> rgb_program_get_default_config(offset);
+
+    <span style="color: #0099FF; font-style: italic">// Map the state machine&#39;s SET and OUT pin group to three pins, the `pin`</span>
+    <span style="color: #0099FF; font-style: italic">// parameter to this function is the lowest one. These groups overlap.</span>
+    sm_config_set_set_pins(<span style="color: #555555">&amp;</span>c, pin, <span style="color: #FF6600">3</span>);
+    sm_config_set_out_pins(<span style="color: #555555">&amp;</span>c, pin, <span style="color: #FF6600">3</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Set clock division (Commented out, this one runs at full speed)</span>
+    <span style="color: #0099FF; font-style: italic">// sm_config_set_clkdiv(&amp;c, 5) ;</span>
+
+    <span style="color: #0099FF; font-style: italic">// Set this pin&#39;s GPIO function (connect PIO to the pad)</span>
+    pio_gpio_init(pio, pin);
+    pio_gpio_init(pio, pin<span style="color: #555555">+</span><span style="color: #FF6600">1</span>);
+    pio_gpio_init(pio, pin<span style="color: #555555">+</span><span style="color: #FF6600">2</span>);
+    
+    <span style="color: #0099FF; font-style: italic">// Set the pin direction to output at the PIO (3 pins)</span>
+    pio_sm_set_consecutive_pindirs(pio, sm, pin, <span style="color: #FF6600">3</span>, <span style="color: #336666">true</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Load our configuration, and jump to the start of the program</span>
+    pio_sm_init(pio, sm, offset, <span style="color: #555555">&amp;</span>c);
+
+    <span style="color: #0099FF; font-style: italic">// Set the state machine running (commented out, I&#39;ll start this in the C)</span>
+    <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
+}
+<span style="color: #555555">%</span>}
+</pre></div>
+
+                      </span></div>
+                    </li>
+                 </ul>
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Macros and Global Variables</b>
                     <p>
@@ -269,7 +530,12 @@
                     function that each of them perform will be explained in later sections.
                     </p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Audio PIN is to match some of the design guide shields. </span>
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Audio PIN is to match some of the design guide shields. </span>
 <span style="color: #009999">#define AUDIO_PIN_LEFT 28  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
 <span style="color: #009999">#define AUDIO_PIN_RIGHT 15  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
 <span style="color: #009999">#define DELAY_CYCLES 5</span>
@@ -285,7 +551,9 @@
 <span style="color: #007788; font-weight: bold">int</span> audio_note_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 <span style="color: #007788; font-weight: bold">int</span> interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 </pre></div>
-
+                      </span></div>
+                    </li>
+                 </ul>
 
             <p>
             Apart from this some macros are defined for determining the static (like the x coordinate of the falling tiles in each column) 
@@ -294,7 +562,12 @@
             of the tile in the left, middle and the right side respectively.
             </p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Define the co-ordinates for the Tiles and the Joystick controlled base.</span>
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Define the co-ordinates for the Tiles and the Joystick controlled base.</span>
 <span style="color: #009999">#define LEFT_VERT 150</span>
 <span style="color: #009999">#define MID_VERT 290</span>
 <span style="color: #009999">#define RIGHT_VERT 430</span>
@@ -306,6 +579,10 @@
 <span style="color: #009999">#define RESTART_PIN 4</span>
 <span style="color: #009999">#define RESTART_PIN_REG ((volatile uint32_t *)(IO_BANK0_BASE + 0x010))</span>
 </pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
+
 
             <p style="margin-bottom: 1cm;">
             A <em>restart</em> button is integrated in the game to as the name suggests restart the game once the game is over, i.e. a tile
@@ -368,7 +645,12 @@
                     </li>
                     </ul>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler</span>() {
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler</span>() {
 
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_LEFT));    
 
@@ -424,13 +706,21 @@
     }
 }
 </pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
 
 
             <p>
             A very similar approach is taken for implementing the interrupt handler for the right channel of the headphone.
             </p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler_2</span>() {
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler_2</span>() {
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_RIGHT));    
     <span style="color: #006699; font-weight: bold">if</span> (wav_position <span style="color: #555555">&lt;</span> (WAV_DATA_LENGTH<span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> <span style="color: #FF6600">1</span> <span style="color: #555555">&amp;&amp;</span> flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) { 
         <span style="color: #0099FF; font-style: italic">// set pwm level </span>
@@ -485,6 +775,10 @@
 }
 </pre></div>
 
+                      </span></div>
+                    </li>
+                 </ul>
+
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Processing the ADC Output</b>
                 <p>
@@ -505,7 +799,13 @@
                 <code>adc_x</code> variable. This will be required for determining the side on which the tile was intercepted or where
                 the base tile is in reference to the current state of the screen.
                 </p>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%">uint <span style="color: #CC00FF">act_adc</span>() {
+
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">uint <span style="color: #CC00FF">act_adc</span>() {
     adc_select_input(<span style="color: #FF6600">0</span>);
     uint adc_x_raw <span style="color: #555555">=</span> adc_read();
     uint adc_x <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
@@ -539,6 +839,10 @@
 }
 </pre></div>
 
+                      </span></div>
+                    </li>
+                 </ul>
+
             </li>
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Helper Functions for Animation and Score Tracking</b>
@@ -557,7 +861,12 @@
                 bottom.
                 </p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to abstract the animation.</span>
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to abstract the animation.</span>
 <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">draw_fill_rect</span>(<span style="color: #007788; font-weight: bold">short</span> x, <span style="color: #007788; font-weight: bold">short</span> y, <span style="color: #007788; font-weight: bold">short</span> w, <span style="color: #007788; font-weight: bold">short</span> h, <span style="color: #007788; font-weight: bold">char</span> color, <span style="color: #007788; font-weight: bold">short</span> inc_dec){
     fillRect(x,y,w,h,color);
     fillRect(x,y,w,inc_dec,<span style="color: #FF6600">0</span>);
@@ -565,7 +874,9 @@
     sleep_ms(<span style="color: #FF6600">10</span>);
 }
 </pre></div>
-
+                      </span></div>
+                    </li>
+                 </ul>
 
             <p>
             The score needs to be updated every time a tile is intercepted, to do this, firstly the entire area that shows the score is
@@ -576,7 +887,12 @@
             Then the <code>drawChar</code> function is called thrice to draw each digit on the screen.
             </p>
 
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to keep track of the user&#39;s score.</span>
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to keep track of the user&#39;s score.</span>
 <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">update_score</span>(uint score){
     fillRect(<span style="color: #FF6600">30</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">240</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
     <span style="color: #0099FF; font-style: italic">/* setCursor(30, 30); */</span>
@@ -590,13 +906,280 @@
     drawChar(<span style="color: #FF6600">60</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">2</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
 }
 </pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
 
             </li>
 
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>The <code>main</code> Function</b>
                 <p>
+                Let's take a look at configuring the <code>PWM</code> channels for the audio generation. The <code>GPIO</code> pins need to
+                be mapped to the <code>PWM</code> function. After that the interrupts are configured to fire when a single <code>PWM</code>
+                cycle is complete, which is determined by the <code>PWM_IRQ_WRAP</code> macro. Once that is done, each channel is assigned
+                an interrupt service routine. Finally, we get the default <code>PWM</code> config struct and update the <code>clkdiv</code> and
+                <code>wrap</code> values. The latter is set to <code>250</code> which means that the counter will go upto <code>250</code> and
+                then return to <code>0</code>. At the end, both the <code>GPIO</code> pins are set to a <code>LOW</code> state.
                 </p>
+
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">int</span> <span style="color: #CC00FF">main</span>() {
+
+    <span style="color: #0099FF; font-style: italic">/////////////////////////////////// AUDIO CODE //////////////////////////////////////////</span>
+    gpio_set_function(AUDIO_PIN_LEFT, GPIO_FUNC_PWM);
+    gpio_set_function(AUDIO_PIN_RIGHT, GPIO_FUNC_PWM);
+
+    <span style="color: #007788; font-weight: bold">int</span> audio_pin_slice <span style="color: #555555">=</span> pwm_gpio_to_slice_num(AUDIO_PIN_LEFT);
+    <span style="color: #007788; font-weight: bold">int</span> audio_pin_slice_2 <span style="color: #555555">=</span> pwm_gpio_to_slice_num(AUDIO_PIN_RIGHT);
+
+
+    <span style="color: #0099FF; font-style: italic">// Setup PWM interrupt to fire when PWM cycle is complete</span>
+    pwm_clear_irq(audio_pin_slice);
+    pwm_clear_irq(audio_pin_slice_2);
+    pwm_set_irq_mask_enabled((<span style="color: #FF6600">1u</span><span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">6</span>) <span style="color: #555555">|</span> (<span style="color: #FF6600">1u</span><span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">7</span>), <span style="color: #336666">true</span>);
+
+    <span style="color: #0099FF; font-style: italic">// set the handle function above</span>
+    irq_add_shared_handler(PWM_IRQ_WRAP, pwm_interrupt_handler, <span style="color: #FF6600">0</span>);
+    irq_add_shared_handler(PWM_IRQ_WRAP, pwm_interrupt_handler_2, <span style="color: #FF6600">1</span>);
+    irq_set_enabled(PWM_IRQ_WRAP, <span style="color: #336666">true</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Setup PWM for audio output</span>
+    pwm_config config <span style="color: #555555">=</span> pwm_get_default_config();
+    
+    <span style="color: #0099FF; font-style: italic">/* Base clock 176,000,000 Hz divide by wrap 250 then the clock divider further divides</span>
+<span style="color: #0099FF; font-style: italic">     * to set the interrupt rate. </span>
+<span style="color: #0099FF; font-style: italic">     * </span>
+<span style="color: #0099FF; font-style: italic">     * 11 KHz is fine for speech. Phone lines generally sample at 8 KHz</span>
+<span style="color: #0099FF; font-style: italic">     * </span>
+<span style="color: #0099FF; font-style: italic">     * </span>
+<span style="color: #0099FF; font-style: italic">     * So clkdiv should be as follows for given sample rate</span>
+<span style="color: #0099FF; font-style: italic">     *  8.0f for 11 KHz</span>
+<span style="color: #0099FF; font-style: italic">     *  4.0f for 22 KHz</span>
+<span style="color: #0099FF; font-style: italic">     *  2.0f for 44 KHz etc</span>
+<span style="color: #0099FF; font-style: italic">     */</span>
+    pwm_config_set_clkdiv(<span style="color: #555555">&amp;</span>config, <span style="color: #FF6600">8.0f</span>); 
+    pwm_config_set_wrap(<span style="color: #555555">&amp;</span>config, <span style="color: #FF6600">250</span>); 
+    pwm_init(audio_pin_slice, <span style="color: #555555">&amp;</span>config, <span style="color: #336666">true</span>);
+
+    pwm_init(audio_pin_slice_2, <span style="color: #555555">&amp;</span>config, <span style="color: #336666">true</span>);
+
+
+    pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);
+    pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);
+    <span style="color: #0099FF; font-style: italic">/////////////////////////////////// AUDIO CODE //////////////////////////////////////////</span>
+</pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
+
+ 
+            <p>
+            Now we will move onto the configuration of the <code>RESTART_PIN</code> and the joystick. For the former we first initialize the <code>GPIO</code> pin
+            connected the restart button, and then set it to <em>input</em> mode. After that, <code>stdio</code> and the <code>VGA</code> library is initialized. For
+            the joystick, the <code>adc</code> peripheral is initialized. Then the <code>GPIO</code> pin is mapped to the <code>adc</code>. Finally some variables
+            are defined which will keep track of our tiles' positions, the current score, the current joystick position, etc. At the end we initialize the score board
+            and call the <code>update_score</code> function.
+            </p>
+
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">    gpio_init(RESTART_PIN);
+    gpio_set_dir(RESTART_PIN, GPIO_IN);
+
+    <span style="color: #0099FF; font-style: italic">// Initialize stdio</span>
+    stdio_init_all();
+
+    <span style="color: #0099FF; font-style: italic">// Initialize VGA</span>
+    initVGA();
+    
+    adc_init();
+
+    
+    <span style="color: #0099FF; font-style: italic">// Make sure GPIO is high-impedance, no pullups etc</span>
+    adc_gpio_init(<span style="color: #FF6600">26</span>);
+
+    <span style="color: #0099FF; font-style: italic">// Initialize indices for the tiles, the score for the user, and the restart button status.</span>
+    uint blue_indx <span style="color: #555555">=</span> <span style="color: #FF6600">20</span>, green_indx <span style="color: #555555">=</span> <span style="color: #FF6600">40</span>, cyan_indx <span style="color: #555555">=</span> <span style="color: #FF6600">60</span>, joystick_pos <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+    uint curr_score <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>, buttons_status <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+
+    drawChar(<span style="color: #FF6600">30</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;S&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    drawChar(<span style="color: #FF6600">45</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;c&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+
+    drawChar(<span style="color: #FF6600">60</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;o&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    drawChar(<span style="color: #FF6600">75</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;r&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+
+    drawChar(<span style="color: #FF6600">90</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;e&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    drawChar(<span style="color: #FF6600">105</span>, <span style="color: #FF6600">30</span>, <span style="color: #CC3300">&#39;:&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    update_score(curr_score);
+    
+    <span style="color: #0099FF; font-style: italic">// Sleep for some time, to give the user a chance to get READY.</span>
+    sleep_ms(<span style="color: #FF6600">5000</span>);
+</pre></div>
+
+                      </span></div>
+                    </li>
+                 </ul>
+
+
+            <p>
+            For the actual game play, we use 2 <code>while</code> loops, where the former controls the game status, and the latter controls and animates the falling tiles.
+            Once the user misses a tile, the code exits from the inner <code>while</code> loop and polls the restart button, once the button is pressed the game re-initializes.
+            For animation the <code>y-cordinate</code> of the tiles is incremented in multiples of <code>4</code>, this multiplicative factor can be adjusted based on the 
+            speed requirement, i.e. the speed at which the tiles should fall. Therefore, the higher the multiplicative factor the faster the tiles fall. The <code>y-cordinate</code>
+            also helps us determine whether the tile has reached the bottom of the screen. Now, based on the current joystick position and the state of the screen the 
+            <code>current_score</code>, <code>flag_start</code>, and the <code>interception_side</code> variables are updated. Every time a tile is hit, it blinks with red color 
+            and then disappears. Finally, when a tile is missed the <code>drawChar</code> function is used to display "Game Over!!" on the screen and the tiles are cleared. After that
+            the game waits for the restart button to be pressed. This complete process repeats indefinitely.
+            </p>
+
+
+                  <ul class="collapsible popout">
+                    <li>
+                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                      <div class="collapsible-body"><span>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">    <span style="color: #006699; font-weight: bold">while</span>(<span style="color: #336666">true</span>) {
+        <span style="color: #006699; font-weight: bold">while</span> (<span style="color: #336666">true</span>){
+            <span style="color: #0099FF; font-style: italic">// Get the current joystick position.</span>
+            joystick_pos <span style="color: #555555">=</span> act_adc();
+            
+            <span style="color: #0099FF; font-style: italic">// Check if the cyan colored tile, reached the bottom of the screen. If so</span>
+            <span style="color: #0099FF; font-style: italic">// reset it&#39;s co-ordinates back to the top, and check if it was intercepted,</span>
+            <span style="color: #0099FF; font-style: italic">// if it was change the tile&#39;s color to RED, and make it blink twice, suggesting</span>
+            <span style="color: #0099FF; font-style: italic">// that the tile was intercepted, and update the user&#39;s score. If the tile was missed,</span>
+            <span style="color: #0099FF; font-style: italic">// exit the loop.</span>
+            <span style="color: #006699; font-weight: bold">if</span> (cyan_indx <span style="color: #555555">&gt;</span> <span style="color: #FF6600">89</span>) {
+                cyan_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+                fillRect(RIGHT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+                <span style="color: #006699; font-weight: bold">if</span> (joystick_pos <span style="color: #555555">&gt;</span> <span style="color: #FF6600">50</span>) {
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(RIGHT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,RED);
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(RIGHT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+                    curr_score <span style="color: #555555">+=</span> <span style="color: #FF6600">1</span>;
+                    update_score(curr_score);
+                    flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">1</span>;
+                    interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">2</span>;
+                    __wfi();
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    fillRect(RIGHT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+                    <span style="color: #006699; font-weight: bold">break</span>;
+                }
+            }
+
+
+            <span style="color: #0099FF; font-style: italic">// Check if the green colored tile, reached the bottom of the screen. If so</span>
+            <span style="color: #0099FF; font-style: italic">// reset it&#39;s co-ordinates back to the top, and check if it was intercepted,</span>
+            <span style="color: #0099FF; font-style: italic">// if it was change the tile&#39;s color to RED, and make it blink twice, suggesting</span>
+            <span style="color: #0099FF; font-style: italic">// that the tile was intercepted, and update the user&#39;s score. If the tile was missed,</span>
+            <span style="color: #0099FF; font-style: italic">// exit the loop.</span>
+            <span style="color: #006699; font-weight: bold">if</span> (green_indx <span style="color: #555555">&gt;</span> <span style="color: #FF6600">89</span>) {
+                green_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+                fillRect(MID_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+
+                <span style="color: #006699; font-weight: bold">if</span> (joystick_pos <span style="color: #555555">==</span> <span style="color: #FF6600">50</span>) {
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(MID_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,RED);
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(MID_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+                    curr_score <span style="color: #555555">+=</span> <span style="color: #FF6600">1</span>;
+                    update_score(curr_score);
+                    flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">1</span>;
+                    interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">1</span>;
+                    __wfi();
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    fillRect(MID_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+                    <span style="color: #006699; font-weight: bold">break</span>;
+                }
+            }
+            
+            <span style="color: #0099FF; font-style: italic">// Check if the blue colored tile, reached the bottom of the screen. If so</span>
+            <span style="color: #0099FF; font-style: italic">// reset it&#39;s co-ordinates back to the top, and check if it was intercepted,</span>
+            <span style="color: #0099FF; font-style: italic">// if it was change the tile&#39;s color to RED, and make it blink twice, suggesting</span>
+            <span style="color: #0099FF; font-style: italic">// that the tile was intercepted, and update the user&#39;s score. If the tile was missed,</span>
+            <span style="color: #0099FF; font-style: italic">// exit the loop.</span>
+            <span style="color: #006699; font-weight: bold">if</span> (blue_indx <span style="color: #555555">&gt;</span> <span style="color: #FF6600">89</span>) {
+                blue_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+                fillRect(LEFT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+                <span style="color: #006699; font-weight: bold">if</span> (joystick_pos <span style="color: #555555">&lt;</span> <span style="color: #FF6600">50</span>) {
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(LEFT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,RED);
+                    sleep_ms(<span style="color: #FF6600">40</span>);
+                    fillRect(LEFT_VERT_TILES,<span style="color: #FF6600">360</span>,<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+                    curr_score <span style="color: #555555">+=</span> <span style="color: #FF6600">1</span>;
+                    update_score(curr_score);
+                    flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">1</span>;
+                    interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+                    __wfi();
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    fillRect(LEFT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+                    <span style="color: #006699; font-weight: bold">break</span>;
+                }
+            }
+            
+            <span style="color: #0099FF; font-style: italic">// Animate the tiles, by erasing a small rectangle of dimensions 4x40 from it&#39;s</span>
+            <span style="color: #0099FF; font-style: italic">// top and creating a rectangle at the bottom with the exact same dimensions. This</span>
+            <span style="color: #0099FF; font-style: italic">// emulates the falling tiles.</span>
+            draw_fill_rect(LEFT_VERT_TILES,(blue_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,BLUE,<span style="color: #FF6600">4</span>);
+            draw_fill_rect(MID_VERT_TILES,(green_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,GREEN,<span style="color: #FF6600">4</span>);
+            draw_fill_rect(RIGHT_VERT_TILES,(cyan_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,CYAN,<span style="color: #FF6600">4</span>);
+            
+            <span style="color: #0099FF; font-style: italic">// Update the co-ordinates for each of the tile.</span>
+            cyan_indx<span style="color: #555555">++</span>;
+            green_indx<span style="color: #555555">++</span>;
+            blue_indx<span style="color: #555555">++</span>;
+        }
+        
+        <span style="color: #0099FF; font-style: italic">// Erase the tiles, to clear the screen.</span>
+
+        fillRect(LEFT_VERT_TILES,(blue_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+        fillRect(MID_VERT_TILES,(green_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+        fillRect(RIGHT_VERT_TILES,(cyan_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+
+        <span style="color: #0099FF; font-style: italic">// Display Game over.</span>
+        drawChar(<span style="color: #FF6600">180</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;G&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">210</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;A&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">240</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;M&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">270</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;E&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">300</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39; &#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">330</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;O&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">360</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;V&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">390</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;E&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">420</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;R&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+        drawChar(<span style="color: #FF6600">450</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;!&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+
+        drawChar(<span style="color: #FF6600">480</span>, <span style="color: #FF6600">240</span>, <span style="color: #CC3300">&#39;!&#39;</span>, WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">5</span>);
+
+        <span style="color: #0099FF; font-style: italic">// Wait here untill restart button is pressed.</span>
+        buttons_status <span style="color: #555555">=</span> register_read(RESTART_PIN_REG);
+        printf(<span style="color: #CC3300">&quot;0x%08x</span><span style="color: #CC3300; font-weight: bold">\n</span><span style="color: #CC3300">&quot;</span>, buttons_status);
+        <span style="color: #006699; font-weight: bold">while</span> (buttons_status <span style="color: #555555">==</span> <span style="color: #FF6600">0</span>){
+            buttons_status <span style="color: #555555">=</span> register_read(RESTART_PIN_REG);
+            <span style="color: #0099FF; font-style: italic">/* printf(&quot;0x%08x\n&quot;, buttons_status); */</span>
+            sleep_ms(<span style="color: #FF6600">10</span>);
+        }
+        
+        <span style="color: #0099FF; font-style: italic">// Clear the screen, and reset the score.</span>
+        fillRect(<span style="color: #FF6600">180</span>,<span style="color: #FF6600">240</span>,<span style="color: #FF6600">400</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
+        curr_score <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+        update_score(curr_score);
+
+        }
+    <span style="color: #006699; font-weight: bold">return</span> <span style="color: #FF6600">0</span>;
+}
+</pre></div>
+                      </span></div>
+                    </li>
+                 </ul>
+
+            That brings us to the end of our project. We hope this was insightful and allows people to get a better understanding of how the RP2040 works.
 
             </li>
             
@@ -604,6 +1187,8 @@
 
         <h4><a name="jour" style="color: #000000;">Journey</a></h4>
 
+        <h4><a name="ress" style="color: #000000;">It Actually Works!</a></h4>
+        
         <h4><a name="refs" style="color: #000000;">References</a></h4>
 
         <ul>
@@ -629,5 +1214,11 @@
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/c.min.js"></script> -->
     <!-- <script>hljs.highlightAll();</script> -->
+     <script>
+       document.addEventListener('DOMContentLoaded', function() {
+        var elems = document.querySelectorAll('.collapsible');
+        M.Collapsible.init(elems);
+      });
+       </script>
   </body>
 </html>
