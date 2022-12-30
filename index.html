@@ -8,6 +8,9 @@
     <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="css/custom_style.css"/>
 
+    <!-- <link rel="stylesheet" -->
+    <!--   href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/base16/pop.min.css"> -->
+
     <style>
         body {
             font-family: 'JetBrains Mono';font-size: 20px;
@@ -235,21 +238,23 @@
                     </p>
                 </li>
 
-            <pre>
-                <code>
-#include "vga_graphics.h"
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include "pico/stdlib.h"
-#include "hardware/pio.h"
-#include "hardware/dma.h"
-#include "hardware/adc.h"
-#include "registers.h"
-#include "hardware/irq.h"  // interrupts
-#include "hardware/pwm.h"  // pwm 
-#include "hardware/sync.h" // wait for interrupt 
-                </code>
-            </pre>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #009999">#include &quot;vga_graphics.h&quot;</span>
+
+<span style="color: #009999">#include &lt;stdio.h&gt;</span>
+<span style="color: #009999">#include &lt;stdlib.h&gt;</span>
+<span style="color: #009999">#include &quot;pico/stdlib.h&quot;</span>
+<span style="color: #009999">#include &quot;pico/multicore.h&quot;</span>
+
+<span style="color: #009999">#include &quot;hardware/pio.h&quot;</span>
+<span style="color: #009999">#include &quot;hardware/dma.h&quot;</span>
+<span style="color: #009999">#include &quot;hardware/adc.h&quot;</span>
+<span style="color: #009999">#include &quot;registers.h&quot;</span>
+<span style="color: #009999">#include &quot;hardware/irq.h&quot;  </span><span style="color: #0099FF; font-style: italic">// interrupts</span>
+
+<span style="color: #009999">#include &quot;hardware/pwm.h&quot;  </span><span style="color: #0099FF; font-style: italic">// pwm </span>
+<span style="color: #009999">#include &quot;hardware/sync.h&quot; </span><span style="color: #0099FF; font-style: italic">// wait for interrupt</span>
+
+</pre></div>
 
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Macros and Global Variables</b>
@@ -266,25 +271,23 @@
                     function that each of them perform will be explained in later sections.
                     </p>
 
-            <pre>
-                <code>
-// Audio PIN is to match some of the design guide shields. 
-#define AUDIO_PIN_LEFT 28  // you can change this to whatever you like
-#define AUDIO_PIN_RIGHT 15  // you can change this to whatever you like
-#define DELAY_CYCLES 5
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Audio PIN is to match some of the design guide shields. </span>
+<span style="color: #009999">#define AUDIO_PIN_LEFT 28  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
+<span style="color: #009999">#define AUDIO_PIN_RIGHT 15  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
+<span style="color: #009999">#define DELAY_CYCLES 5</span>
 
-#include "audio_notes/A_major.h"
-#include "audio_notes/E_major.h"
-#include "audio_notes/B_major.h"
-#include "audio_notes/Din_2.h"
-#include "audio_notes/Tin_2.h"
-#include "audio_notes/Na_2.h"
-int wav_position = 0;
-int flag_start = 0;
-int audio_note_indx = 0;
-int interception_side = 0;
-                </code>
-            </pre>
+<span style="color: #009999">#include &quot;audio_notes/A_major.h&quot;</span>
+<span style="color: #009999">#include &quot;audio_notes/E_major.h&quot;</span>
+<span style="color: #009999">#include &quot;audio_notes/B_major.h&quot;</span>
+<span style="color: #009999">#include &quot;audio_notes/Din_2.h&quot;</span>
+<span style="color: #009999">#include &quot;audio_notes/Tin_2.h&quot;</span>
+<span style="color: #009999">#include &quot;audio_notes/Na_2.h&quot;</span>
+<span style="color: #007788; font-weight: bold">int</span> wav_position <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+<span style="color: #007788; font-weight: bold">int</span> flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+<span style="color: #007788; font-weight: bold">int</span> audio_note_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+<span style="color: #007788; font-weight: bold">int</span> interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+</pre></div>
+
 
             <p>
             Apart from this some macros are defined for determining the static (like the x coordinate of the falling tiles in each column) 
@@ -293,21 +296,18 @@ int interception_side = 0;
             of the tile in the left, middle and the right side respectively.
             </p>
 
-            <pre>
-                <code>
-// Define the co-ordinates for the Tiles and the Joystick controlled base.
-#define LEFT_VERT 150
-#define MID_VERT 290
-#define RIGHT_VERT 430
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Define the co-ordinates for the Tiles and the Joystick controlled base.</span>
+<span style="color: #009999">#define LEFT_VERT 150</span>
+<span style="color: #009999">#define MID_VERT 290</span>
+<span style="color: #009999">#define RIGHT_VERT 430</span>
 
-#define LEFT_VERT_TILES 160
-#define MID_VERT_TILES 300
-#define RIGHT_VERT_TILES 440
+<span style="color: #009999">#define LEFT_VERT_TILES 160</span>
+<span style="color: #009999">#define MID_VERT_TILES 300</span>
+<span style="color: #009999">#define RIGHT_VERT_TILES 440</span>
 
-#define RESTART_PIN 4
-#define RESTART_PIN_REG ((volatile uint32_t *)(IO_BANK0_BASE + 0x010))
-                </code>
-            </pre>
+<span style="color: #009999">#define RESTART_PIN 4</span>
+<span style="color: #009999">#define RESTART_PIN_REG ((volatile uint32_t *)(IO_BANK0_BASE + 0x010))</span>
+</pre></div>
 
             <p style="margin-bottom: 1cm;">
             A <em>restart</em> button is integrated in the game to as the name suggests restart the game once the game is over, i.e. a tile
@@ -370,126 +370,122 @@ int interception_side = 0;
                     </li>
                     </ul>
 
-            <pre>
-                <code>
-void pwm_interrupt_handler() {
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler</span>() {
+
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_LEFT));    
-    if (wav_position < (WAV_DATA_LENGTH<<3) - 1 && flag_start == 1) { 
-        // set pwm level 
-        // allow the pwm value to repeat for 8 cycles this is >>3 
-        if (audio_note_indx == 0) {
-            if (interception_side == 0 || interception_side == 1) {
-                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[wav_position>>3]+20);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[(wav_position>>3) - DELAY_CYCLES]-20);
 
+    <span style="color: #006699; font-weight: bold">if</span> (wav_position <span style="color: #555555">&lt;</span> (WAV_DATA_LENGTH<span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> <span style="color: #FF6600">1</span> <span style="color: #555555">&amp;&amp;</span> flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) { 
+        <span style="color: #0099FF; font-style: italic">// set pwm level </span>
+        <span style="color: #0099FF; font-style: italic">// allow the pwm value to repeat for 8 cycles this is &gt;&gt;3 </span>
+        <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">==</span> <span style="color: #FF6600">0</span>) {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">0</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]<span style="color: #555555">+</span><span style="color: #FF6600">20</span>);
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">20</span>);
                 }
             }
-        } else if (audio_note_indx == 1) {
-            if (interception_side == 0 || interception_side == 1) {
-                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[wav_position>>3]+20);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[(wav_position>>3) - DELAY_CYCLES]-20);
+        } <span style="color: #006699; font-weight: bold">else</span> <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">0</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]<span style="color: #555555">+</span><span style="color: #FF6600">20</span>);
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">20</span>);
                 }
             }
-        } else {
-            if (interception_side == 0 || interception_side == 1) {
-                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[wav_position>>3]+20);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
 
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
+        } <span style="color: #006699; font-weight: bold">else</span> {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">0</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]<span style="color: #555555">+</span><span style="color: #FF6600">20</span>);
+            } <span style="color: #006699; font-weight: bold">else</span> {
 
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[(wav_position>>3) - DELAY_CYCLES]-20);
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">20</span>);
                 }
             }
         }
-        wav_position++;
-    } else {
-        // reset to start
-        pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);  
-        if (flag_start == 1) {
-            wav_position = 0;
-            flag_start = 0;
-            if (audio_note_indx < 2) {
-                audio_note_indx += 1;
-            } else {
-                audio_note_indx = 0;
+        wav_position<span style="color: #555555">++</span>;
+    } <span style="color: #006699; font-weight: bold">else</span> {
+        <span style="color: #0099FF; font-style: italic">// reset to start</span>
+        pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);  
+        <span style="color: #006699; font-weight: bold">if</span> (flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+            wav_position <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+            flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+            <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">&lt;</span> <span style="color: #FF6600">2</span>) {
+                audio_note_indx <span style="color: #555555">+=</span> <span style="color: #FF6600">1</span>;
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                audio_note_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
             }
         }
     }
 }
-                </code>
-            </pre>
+</pre></div>
+
 
             <p>
             A very similar approach is taken for implementing the interrupt handler for the right channel of the headphone.
             </p>
 
-            <pre>
-                <code>
-void pwm_interrupt_handler_2() {
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler_2</span>() {
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_RIGHT));    
-    if (wav_position < (WAV_DATA_LENGTH<<3) - 1 && flag_start == 1) { 
+    <span style="color: #006699; font-weight: bold">if</span> (wav_position <span style="color: #555555">&lt;</span> (WAV_DATA_LENGTH<span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> <span style="color: #FF6600">1</span> <span style="color: #555555">&amp;&amp;</span> flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) { 
+        <span style="color: #0099FF; font-style: italic">// set pwm level </span>
+        <span style="color: #0099FF; font-style: italic">// allow the pwm value to repeat for 8 cycles this is &gt;&gt;3 </span>
+        <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">==</span> <span style="color: #FF6600">0</span>) {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">2</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]);
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">80</span>);
+                }
+            }
+        } <span style="color: #006699; font-weight: bold">else</span> <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">2</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]);
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">80</span>);
+                }
+            }
+        } <span style="color: #006699; font-weight: bold">else</span> {
+            <span style="color: #006699; font-weight: bold">if</span> (interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">1</span> <span style="color: #555555">||</span> interception_side <span style="color: #555555">==</span> <span style="color: #FF6600">2</span>) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>]);
 
-        // set pwm level 
-        // allow the pwm value to repeat for 8 cycles this is >>3 
-        if (audio_note_indx == 0) {
-            if (interception_side == 1 || interception_side == 2) {
-                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[wav_position>>3]);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[(wav_position>>3) - DELAY_CYCLES]-80);
-                }
-            }
-        } else if (audio_note_indx == 1) {
-            if (interception_side == 1 || interception_side == 2) {
-                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[wav_position>>3]);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[(wav_position>>3) - DELAY_CYCLES]-80);
-                }
-            }
-        } else {
-            if (interception_side == 1 || interception_side == 2) {
-                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[wav_position>>3]);
-            } else {
-                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
-                } else {
-                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[(wav_position>>3) - DELAY_CYCLES]-80);
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                <span style="color: #006699; font-weight: bold">if</span> (((wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES) <span style="color: #555555">&lt;=</span> <span style="color: #FF6600">0</span>) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);
+                } <span style="color: #006699; font-weight: bold">else</span> {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[(wav_position<span style="color: #555555">&gt;&gt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> DELAY_CYCLES]<span style="color: #555555">-</span><span style="color: #FF6600">80</span>);
                 }
             }
         }
-        wav_position++;
-    } else {
-        // reset to start
-        pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);  
-        if (flag_start == 1) {
-            wav_position = 0;
+        wav_position<span style="color: #555555">++</span>;
+    } <span style="color: #006699; font-weight: bold">else</span> {
+        <span style="color: #0099FF; font-style: italic">// reset to start</span>
+        pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);  
+        <span style="color: #006699; font-weight: bold">if</span> (flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) {
+            wav_position <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 
-            flag_start = 0;
-            if (audio_note_indx < 2) {
-                audio_note_indx += 1;
-            } else {
-                audio_note_indx = 0;
+            flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
+            <span style="color: #006699; font-weight: bold">if</span> (audio_note_indx <span style="color: #555555">&lt;</span> <span style="color: #FF6600">2</span>) {
+                audio_note_indx <span style="color: #555555">+=</span> <span style="color: #FF6600">1</span>;
+            } <span style="color: #006699; font-weight: bold">else</span> {
+                audio_note_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
             }
         }
     }
 }
-                </code>
-            </pre>
+</pre></div>
 
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Processing the ADC Output</b>
@@ -511,46 +507,40 @@ void pwm_interrupt_handler_2() {
                 <code>adc_x</code> variable. This will be required for determining the side on which the tile was intercepted or where
                 the base tile is in reference to the current state of the screen.
                 </p>
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%">uint <span style="color: #CC00FF">act_adc</span>() {
+    adc_select_input(<span style="color: #FF6600">0</span>);
+    uint adc_x_raw <span style="color: #555555">=</span> adc_read();
+    uint adc_x <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 
-            <pre>
-                <code>
-// Define a function to draw the base tile, based on the current joystick
-// position.
-uint act_adc() {
-    adc_select_input(0);
-    uint adc_x_raw = adc_read();
-    uint adc_x = 0;
-
-    if (adc_x_raw > 1600 && adc_x_raw < 2400) {
-        adc_x = 2048;
-    } else {
-        adc_x = adc_x_raw;
+    <span style="color: #006699; font-weight: bold">if</span> (adc_x_raw <span style="color: #555555">&gt;</span> <span style="color: #FF6600">1600</span> <span style="color: #555555">&amp;&amp;</span> adc_x_raw <span style="color: #555555">&lt;</span> <span style="color: #FF6600">2400</span>) {
+        adc_x <span style="color: #555555">=</span> <span style="color: #FF6600">2048</span>;
+    } <span style="color: #006699; font-weight: bold">else</span> {
+        adc_x <span style="color: #555555">=</span> adc_x_raw;
     }
 
-    adc_x = (adc_x * 100) / 4095;
+    adc_x <span style="color: #555555">=</span> (adc_x <span style="color: #555555">*</span> <span style="color: #FF6600">100</span>) <span style="color: #555555">/</span> <span style="color: #FF6600">4095</span>;
 
-    printf("%d, %d\n", adc_x, adc_x_raw);
+    printf(<span style="color: #CC3300">&quot;%d, %d</span><span style="color: #CC3300; font-weight: bold">\n</span><span style="color: #CC3300">&quot;</span>, adc_x, adc_x_raw);
     
-
-    if (adc_x == 50){
-        fillRect(MID_VERT,460,60,20,WHITE);
-        fillRect(LEFT_VERT,460,60,20,0);
-        fillRect(RIGHT_VERT,460,60,20,0);
+    <span style="color: #006699; font-weight: bold">if</span> (adc_x <span style="color: #555555">==</span> <span style="color: #FF6600">50</span>){
+        fillRect(MID_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,WHITE);
+        fillRect(LEFT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+        fillRect(RIGHT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
     }
-    else if (adc_x > 50) {
-        fillRect(RIGHT_VERT,460,60,20,WHITE);
-        fillRect(LEFT_VERT,460,60,20,0);
-        fillRect(MID_VERT,460,60,20,0);
-    }else if (adc_x < 50) {
-        fillRect(LEFT_VERT,460,60,20,WHITE);
-        fillRect(MID_VERT,460,60,20,0);
-        fillRect(RIGHT_VERT,460,60,20,0);
+    <span style="color: #006699; font-weight: bold">else</span> <span style="color: #006699; font-weight: bold">if</span> (adc_x <span style="color: #555555">&gt;</span> <span style="color: #FF6600">50</span>) {
+        fillRect(RIGHT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,WHITE);
+        fillRect(LEFT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+        fillRect(MID_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+    }<span style="color: #006699; font-weight: bold">else</span> <span style="color: #006699; font-weight: bold">if</span> (adc_x <span style="color: #555555">&lt;</span> <span style="color: #FF6600">50</span>) {
+        fillRect(LEFT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,WHITE);
+        fillRect(MID_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+        fillRect(RIGHT_VERT,<span style="color: #FF6600">460</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
     }
-    sleep_ms(10);
-    return adc_x;
+    sleep_ms(<span style="color: #FF6600">10</span>);
+    <span style="color: #006699; font-weight: bold">return</span> adc_x;
 }
-                </code>
-            </pre>
+</pre></div>
+
             </li>
 
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Helper Functions for Animation and Score Tracking</b>
@@ -569,19 +559,16 @@ uint act_adc() {
                 bottom.
                 </p>
 
-            <pre>
-                <code>
-// Helper function to abstract the animation.
-void draw_fill_rect(short x, short y, short w, short h, char color, short inc_dec){
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to abstract the animation.</span>
+<span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">draw_fill_rect</span>(<span style="color: #007788; font-weight: bold">short</span> x, <span style="color: #007788; font-weight: bold">short</span> y, <span style="color: #007788; font-weight: bold">short</span> w, <span style="color: #007788; font-weight: bold">short</span> h, <span style="color: #007788; font-weight: bold">char</span> color, <span style="color: #007788; font-weight: bold">short</span> inc_dec){
     fillRect(x,y,w,h,color);
-    fillRect(x,y,w,inc_dec,0);
-    fillRect(x,y+h,w,inc_dec,color);
-    sleep_ms(10);
+    fillRect(x,y,w,inc_dec,<span style="color: #FF6600">0</span>);
+    fillRect(x,y<span style="color: #555555">+</span>h,w,inc_dec,color);
+    sleep_ms(<span style="color: #FF6600">10</span>);
+}
+</pre></div>
 
-}           
-                </code>
-            </pre>
-            
+
             <p>
             The score needs to be updated every time a tile is intercepted, to do this, firstly the entire area that shows the score is
             erased. For displaying score we need digits, which are passed as characters to the <code>drawChar</code> function. We decided
@@ -591,24 +578,21 @@ void draw_fill_rect(short x, short y, short w, short h, char color, short inc_de
             Then the <code>drawChar</code> function is called thrice to draw each digit on the screen.
             </p>
 
-            <pre>
-                <code>
-// Helper function to keep track of the user's score.
-void update_score(uint score){
-    fillRect(30,60,240,20,0);
-    /* setCursor(30, 30); */
-    /* setTextSize(3); */
-    char str_score[3] = {'0', '0', '0'};
-    str_score[2] = (score % 10) + '0';
-    str_score[1] = ((score/10) % 10) + '0';
-
-    str_score[0] = (((score/10)/10) % 10) + '0';
-    drawChar(30, 60, str_score[0], WHITE, 0, 2);
-    drawChar(45, 60, str_score[1], WHITE, 0, 2);
-    drawChar(60, 60, str_score[2], WHITE, 0, 2);
+<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 1cm;margin-top: 1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to keep track of the user&#39;s score.</span>
+<span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">update_score</span>(uint score){
+    fillRect(<span style="color: #FF6600">30</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">240</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
+    <span style="color: #0099FF; font-style: italic">/* setCursor(30, 30); */</span>
+    <span style="color: #0099FF; font-style: italic">/* setTextSize(3); */</span>
+    <span style="color: #007788; font-weight: bold">char</span> str_score[<span style="color: #FF6600">3</span>] <span style="color: #555555">=</span> {<span style="color: #CC3300">&#39;0&#39;</span>, <span style="color: #CC3300">&#39;0&#39;</span>, <span style="color: #CC3300">&#39;0&#39;</span>};
+    str_score[<span style="color: #FF6600">2</span>] <span style="color: #555555">=</span> (score <span style="color: #555555">%</span> <span style="color: #FF6600">10</span>) <span style="color: #555555">+</span> <span style="color: #CC3300">&#39;0&#39;</span>;
+    str_score[<span style="color: #FF6600">1</span>] <span style="color: #555555">=</span> ((score<span style="color: #555555">/</span><span style="color: #FF6600">10</span>) <span style="color: #555555">%</span> <span style="color: #FF6600">10</span>) <span style="color: #555555">+</span> <span style="color: #CC3300">&#39;0&#39;</span>;
+    str_score[<span style="color: #FF6600">0</span>] <span style="color: #555555">=</span> (((score<span style="color: #555555">/</span><span style="color: #FF6600">10</span>)<span style="color: #555555">/</span><span style="color: #FF6600">10</span>) <span style="color: #555555">%</span> <span style="color: #FF6600">10</span>) <span style="color: #555555">+</span> <span style="color: #CC3300">&#39;0&#39;</span>;
+    drawChar(<span style="color: #FF6600">30</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">0</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    drawChar(<span style="color: #FF6600">45</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">1</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
+    drawChar(<span style="color: #FF6600">60</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">2</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
 }
-                </code>
-            </pre>
+</pre></div>
+
             </li>
 
 
@@ -616,10 +600,6 @@ void update_score(uint score){
                 <p>
                 </p>
 
-            <pre>
-                <code>
-                </code>
-            </pre>
             </li>
             
             </li>
@@ -647,5 +627,7 @@ void update_score(uint score){
 
     <!--JavaScript at end of body for optimized loading-->
     <script type="text/javascript" src="js/materialize.min.js"></script>
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/c.min.js"></script> -->
+    <!-- <script>hljs.highlightAll();</script> -->
   </body>
 </html>
