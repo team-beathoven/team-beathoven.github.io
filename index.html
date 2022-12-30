@@ -1,27 +1,29 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <!--Import Google Font-->
     <link href="https://fonts.googleapis.com/css?family=JetBrains Mono" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
-    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
-    <link type="text/css" rel="stylesheet" href="css/custom_style.css"/>
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css" media="screen,projection" />
+    <link type="text/css" rel="stylesheet" href="css/custom_style.css" />
 
     <!-- <link rel="stylesheet" -->
     <!--   href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/base16/pop.min.css"> -->
 
     <style>
         body {
-            font-family: 'JetBrains Mono';font-size: 20px;
+            font-family: 'JetBrains Mono';
+            font-size: 20px;
         }
     </style>
 
     <!--Let browser know website is optimized for mobile-->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  </head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
 
-  <body>
+<body>
 
     <ul class="sidenav" id="mysidenav">
         <li>
@@ -54,12 +56,13 @@
         <li><a class="sidenav-close" href="#mtt"><i class="material-icons">group</i>Meet the Team</a></li>
     </ul>
 
-    <a href="#" data-target="mysidenav" class="btn sidenav-trigger" style="position:absolute; left:20px; top:40px;background-color: #2233dd;">
+    <a href="#" data-target="mysidenav" class="btn sidenav-trigger"
+        style="position:absolute; left:20px; top:40px;background-color: #2233dd;">
         <i class="material-icons" style="font-size: 30px;">menu</i>
     </a>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
+        document.addEventListener('DOMContentLoaded', function () {
             var side = document.querySelectorAll('.sidenav');
             M.Sidenav.init(side)
         })    
@@ -69,17 +72,17 @@
     <div align="center">
         <h2><b>ESE5190 Final Project</b></h2>
         <h3>Falling Piano Tiles</h3>
-        <h6>Ruturaj A. Nanoti  &emsp; &emsp; Siddhant Mathur &emsp; &emsp; Arnav Gadre</h6>
+        <h6>Ruturaj A. Nanoti &emsp; &emsp; Siddhant Mathur &emsp; &emsp; Arnav Gadre</h6>
     </div>
 
     <!-- Aligning all the text with padding -->
     <!-- <top right bottom left> -->
     <div style="padding: 25px 100px 75px 100px;" align="justify">
-    
+
         <h4><a name="intro" style="color: #000000;">Introduction</a></h4>
         <p>
-            The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral, 
-            especially in terms of carrying out tasks that require precise timings and 
+            The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral,
+            especially in terms of carrying out tasks that require precise timings and
             <em>GPIO</em> control. These tasks include handling communication protocols
             such as SPI, I2C, etc. In this project, we have utilized these capabilities
             of the PIO and the RP2040 as a whole to drive a 640x480 VGA display, and emulate
@@ -93,9 +96,10 @@
             to implement this feature, driven using the <em>PWM</em> peripheral on the RP2040.
         </p>
 
-        <p>The repository containing the code is availabe on 
-        <code>GitHub</code> can be accessed by clicking
-        <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.</p>
+        <p>The repository containing the code is availabe on
+            <code>GitHub</code> can be accessed by clicking
+            <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.
+        </p>
 
         <p style="margin-bottom: 1.5cm;">
             To get a little motivation for diving further into this, let's have a look at
@@ -103,146 +107,181 @@
         </p>
 
         <div align="center" style="margin-bottom: 2cm;">
-        <video class="responsive-video" width="960" height="720" controls>
-            <source src="./media/VGA.mov" type="video/mp4">
-        </video>
+            <video class="responsive-video" width="960" height="720" controls>
+                <source src="./media/VGA.mov" type="video/mp4">
+            </video>
         </div>
 
         <h4><a name="work" style="color: #000000;">Working Principle</a></h4>
-        
+
         <p>
             For a detailed understanding of every component we will look at each of the features incorporated
             one by one.
 
-            <ul>
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>VGA (PIO Magic!)</b>
+        <ul>
+            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                <b>VGA (PIO Magic!)</b>
                 <p style="margin-bottom: 2cm;">
-                    First up is the VGA display. The VGA protocol works based on a few very precisely timed signals/pulses, which
+                    First up is the VGA display. The VGA protocol works based on a few very precisely timed
+                    signals/pulses, which
                     can be seen in the figure below.
                 </p>
-                
+
                 <div align="center" style="margin-bottom: 2cm;">
                     <img src="./media/protocol.png" width="720" height="480">
                 </div>
 
                 <p>
-                    Here the <code>HSYNC</code> and <code>VSYNC</code> signals play a major role in terms of communicating
-                    with the display and deciding both the temporal and spatial placement of pixels. The former has control
-                    over when a new row of pixels should be displayed, and the latter controls when a new frame needs to come
-                    in. All of this is controlled by the PIO module on the RP2040, which runs at a clock speed of 25MHz.The whole 
+                    Here the <code>HSYNC</code> and <code>VSYNC</code> signals play a major role in terms of
+                    communicating
+                    with the display and deciding both the temporal and spatial placement of pixels. The former has
+                    control
+                    over when a new row of pixels should be displayed, and the latter controls when a new frame needs to
+                    come
+                    in. All of this is controlled by the PIO module on the RP2040, which runs at a clock speed of
+                    25MHz.The whole
                     protocol can be explained in brief as follows:
 
-                    <ol style="list-style-position: inside;">
-                        <li style="list-style-position: outside;margin-left: 20px;"> 
-                            Our display has a resolution of 640x480, as stated earlier, and hence the <code>HSYNC</code>
-                            signal as the name suggests (<em>Horizontal Sync</em>) needs to be high for 640 clock cycles.
-                        </li>
+                <ol style="list-style-position: inside;">
+                    <li style="list-style-position: outside;margin-left: 20px;">
+                        Our display has a resolution of 640x480, as stated earlier, and hence the <code>HSYNC</code>
+                        signal as the name suggests (<em>Horizontal Sync</em>) needs to be high for 640 clock cycles.
+                    </li>
 
-                        <li style="list-style-position: outside;margin-left: 20px;">
-                            Our <code>HSYNC</code> signal is active-high and starts out as <code>HIGH</code>. During this
-                            time, the <code>R</code>, <code>G</code> and <code>B</code> pins are set to varying volatages
-                            between 0 and 0.7V, in every clock cycle.
-                        </li>
+                    <li style="list-style-position: outside;margin-left: 20px;">
+                        Our <code>HSYNC</code> signal is active-high and starts out as <code>HIGH</code>. During this
+                        time, the <code>R</code>, <code>G</code> and <code>B</code> pins are set to varying volatages
+                        between 0 and 0.7V, in every clock cycle.
+                    </li>
 
-                        <li style="list-style-position: outside;margin-left: 20px;">
-                            Once a row of pixels is complete, the <code>HSYNC</code> enters into its <em>front porch</em>, for
-                            which it goes to a <code>LOW</code> state for 16 clock cycles. Similarly it then moves onto the
-                            <em>sync Pulse</em> and <em>back porch</em> part of the protocol and behaves as shown in the figure
-                            above.
-                        </li>
+                    <li style="list-style-position: outside;margin-left: 20px;">
+                        Once a row of pixels is complete, the <code>HSYNC</code> enters into its <em>front porch</em>,
+                        for
+                        which it goes to a <code>LOW</code> state for 16 clock cycles. Similarly it then moves onto the
+                        <em>sync Pulse</em> and <em>back porch</em> part of the protocol and behaves as shown in the
+                        figure
+                        above.
+                    </li>
 
-                        <li style="list-style-position: outside;margin-left: 20px;">
-                            On the other hand as stated earlier the <code>VSYNC</code> (vertical sync) controls the frame. So,
-                            during the whole <code>HSYNC</code> operation, the <code>VSYNC</code> remains <code>HIGH</code>.
-                        </li>
+                    <li style="list-style-position: outside;margin-left: 20px;">
+                        On the other hand as stated earlier the <code>VSYNC</code> (vertical sync) controls the frame.
+                        So,
+                        during the whole <code>HSYNC</code> operation, the <code>VSYNC</code> remains <code>HIGH</code>.
+                    </li>
 
-                        <li style="list-style-position: outside;margin-left: 20px;">
-                            The <code>VSYNC</code> signal also has the <em>front porch</em>, <em>sync pulse</em>, and the 
-                            <em>back porch</em> part to it, and behaves based on the diagram displayed above, i.e. it stays
-                            at a <code>HIGH</code> state during its <em>front porch</em> for 10 lines (time needed for the
-                            <code>HSYNC</code> signal to go through 10 rows), and so on.
-                        </li>
-                    </ol>
+                    <li style="list-style-position: outside;margin-left: 20px;">
+                        The <code>VSYNC</code> signal also has the <em>front porch</em>, <em>sync pulse</em>, and the
+                        <em>back porch</em> part to it, and behaves based on the diagram displayed above, i.e. it stays
+                        at a <code>HIGH</code> state during its <em>front porch</em> for 10 lines (time needed for the
+                        <code>HSYNC</code> signal to go through 10 rows), and so on.
+                    </li>
+                </ol>
                 </p>
-                </li>
-                
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Joystick</b>
-                    <p style="margin-bottom: 2cm;">
-                        The Joystick is a part of the user interface and enables the user to interact with the game. We used a
-                        dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
-                        needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the axes of the
-                        joystick.
-                    </p>
-                        
-                    <div align="center" style="margin-bottom: 2cm;">
-                        <img src="./media/joystick.png" width="150" height="150">
-                    </div>
+            </li>
 
-                    <p>
-                        The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal obtained from
-                        the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent the 
-                        analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values from
-                        the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then the
-                        data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the joystick
-                        was determined.
-                    </p>
-                </li>
-                
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM</b>
+            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                <b>Joystick</b>
+                <p style="margin-bottom: 2cm;">
+                    The Joystick is a part of the user interface and enables the user to interact with the game. We used
+                    a
+                    dual-axis analog joystick for our game, that spit out values based on its current position. Since,
+                    we only
+                    needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the
+                    axes of the
+                    joystick.
+                </p>
+
+                <div align="center" style="margin-bottom: 2cm;">
+                    <img src="./media/joystick.png" width="150" height="150">
+                </div>
+
+                <p>
+                    The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal
+                    obtained from
+                    the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent
+                    the
+                    analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values
+                    from
+                    the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then
+                    the
+                    data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the
+                    joystick
+                    was determined.
+                </p>
+            </li>
+
+            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                <b>PWM</b>
                 <p>
                     Now we move on to the audio part of the game from the display.The RP2040 doesn't have a DAC onboard,
-                    so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the notes into
-                    a series of duty cycle values and storing it to an array, which can be accessed by the main code and played
-                    whenever a tile is intercepted. Also, note that using a single PWM cycle for each value in the array will not create
-                    a analog like sound effect, since we need some sort of persistence to emulate actual audio. Therefore, each
-                    value in the array is played for 8 cycles to emulate that persistence of sound. This will become more apparent 
+                    so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the
+                    notes into
+                    a series of duty cycle values and storing it to an array, which can be accessed by the main code and
+                    played
+                    whenever a tile is intercepted. Also, note that using a single PWM cycle for each value in the array
+                    will not create
+                    a analog like sound effect, since we need some sort of persistence to emulate actual audio.
+                    Therefore, each
+                    value in the array is played for 8 cycles to emulate that persistence of sound. This will become
+                    more apparent
                     and clear once we take a look at the code.
                 </p>
-                </li>
-            </ul>
-        
+            </li>
+        </ul>
+
         </p>
 
         <h4><a name="comps" style="color: #000000;">Components Required</a></h4>
 
-            <ul>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">RP2040 based Development Board</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">VGA Cable</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Dual-Axis Analog Joystick</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Resistors - 3 (330 Ohm)</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Wired Headphones</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Female Audio Jack</li>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Jumper Wires</li>
-            </ul>
+        <ul>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">RP2040 based Development
+                Board</li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">VGA Cable</li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Dual-Axis Analog
+                Joystick</li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Resistors - 3 (330 Ohm)
+            </li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Wired Headphones</li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Female Audio Jack</li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Jumper Wires</li>
+        </ul>
 
-            <h4><a name="circ" style="color: #000000;">Circuit Connections</a></h4>
+        <h4><a name="circ" style="color: #000000;">Circuit Connections</a></h4>
 
-            <h4><a name="firm" style="color: #000000;">Firmware</a></h4>
+        <h4><a name="firm" style="color: #000000;">Firmware</a></h4>
 
-            <p>
-                Now let's take a look at the code that's driving our RP2040. Here also, we will split our code overview into
-                smaller sections.
-            </p>
+        <p>
+            Now let's take a look at the code that's driving our RP2040. Here also, we will split our code overview into
+            smaller sections.
+        </p>
 
-            <ul>
-                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Including the Necessary Libraries</b>
-                    <p>
+        <ul>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Including the
+                    Necessary Libraries</b>
+                <p>
                     The following code snippet shows some of the standard as well as the hardware libraries that
-                    we are going to use in our code. The hardware libraries included are a part of the <code>PICO-SDK</code>
+                    we are going to use in our code. The hardware libraries included are a part of the
+                    <code>PICO-SDK</code>
                     that abstract register access commands for that particular peripheral into functions and make them
-                    available to the user. So, here we are using the <code>adc</code>, <code>pio</code>, <code>dma</code>,
-                    <code>irq</code> (interrupts) and the <code>pwm</code> peripheral. Finally, the <code>vga_graphics</code>
-                    library that we are using is created by <a href="https://vanhunteradams.com/"><u>Hunter Adams</u></a>,
+                    available to the user. So, here we are using the <code>adc</code>, <code>pio</code>,
+                    <code>dma</code>,
+                    <code>irq</code> (interrupts) and the <code>pwm</code> peripheral. Finally, the
+                    <code>vga_graphics</code>
+                    library that we are using is created by <a href="https://vanhunteradams.com/"><u>Hunter
+                            Adams</u></a>,
                     which can be found <a href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>here</u></a>.
-                    </p>
-                </li>
+                </p>
+            </li>
 
-                  <ul class="collapsible popout">
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-                      
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #009999">#include &quot;vga_graphics.h&quot;</span>
+            <ul class="collapsible popout">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                    <div class="collapsible-body"><span>
+
+                            <!-- HTML generated using hilite.me -->
+                            <div
+                                style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                <pre style="margin: 0; line-height: 125%"><span style="color: #009999">#include &quot;vga_graphics.h&quot;</span>
 
 <span style="color: #009999">#include &lt;stdio.h&gt;</span>
 <span style="color: #009999">#include &lt;stdlib.h&gt;</span>
@@ -258,17 +297,22 @@
 <span style="color: #009999">#include &quot;hardware/pwm.h&quot;  </span><span style="color: #0099FF; font-style: italic">// pwm </span>
 <span style="color: #009999">#include &quot;hardware/sync.h&quot; </span><span style="color: #0099FF; font-style: italic">// wait for interrupt</span>
 
-</pre></div>
-                      </span></div>
-                    </li>
-                 </ul>
+</pre>
+                            </div>
+                        </span></div>
+                </li>
+            </ul>
 
 
-                  <ul class="collapsible popout">
-                    <li>
-                        <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>HSYNC</code></div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+            <ul class="collapsible popout">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
+                        <code>HSYNC</code></div>
+                    <div class="collapsible-body"><span>
+                            <!-- HTML generated using hilite.me -->
+                            <div
+                                style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                <pre style="margin: 0; line-height: 125%">;
 ; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
 ; HSync generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
 
@@ -346,18 +390,23 @@ mov x, osr              ; Copy value from OSR to x scratch <span style="color: #
     <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
 }
 <span style="color: #555555">%</span>}
-</pre></div>
+</pre>
+                            </div>
 
-                      </span></div>
-                    </li>
-                 </ul>
+                        </span></div>
+                </li>
+            </ul>
 
 
-                  <ul class="collapsible popout">
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>VSYNC</code></div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+            <ul class="collapsible popout">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
+                        <code>VSYNC</code></div>
+                    <div class="collapsible-body"><span>
+                            <!-- HTML generated using hilite.me -->
+                            <div
+                                style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                <pre style="margin: 0; line-height: 125%">;
 ; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
 ; VSync generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
 
@@ -442,17 +491,22 @@ set y, <span style="color: #FF6600">31</span>                         ; First pa
     <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
 }
 <span style="color: #555555">%</span>}
-</pre></div>
+</pre>
+                            </div>
 
-                      </span></div>
-                    </li>
-                 </ul>
+                        </span></div>
+                </li>
+            </ul>
 
-                  <ul class="collapsible popout">
-                    <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp; <code>RGB</code></div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">;
+            <ul class="collapsible popout">
+                <li>
+                    <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
+                        <code>RGB</code></div>
+                    <div class="collapsible-body"><span>
+                            <!-- HTML generated using hilite.me -->
+                            <div
+                                style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                <pre style="margin: 0; line-height: 125%">;
 ; Hunter <span style="color: #CC00FF">Adams</span> (vha3<span style="color: #AA0000; background-color: #FFAAAA">@</span>cornell.edu)
 ; RGB generation <span style="color: #006699; font-weight: bold">for</span> VGA driver
 
@@ -510,32 +564,46 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     <span style="color: #0099FF; font-style: italic">// pio_sm_set_enabled(pio, sm, true);</span>
 }
 <span style="color: #555555">%</span>}
-</pre></div>
+</pre>
+                            </div>
 
-                      </span></div>
-                    </li>
-                 </ul>
+                        </span></div>
+                </li>
+            </ul>
 
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Macros and Global Variables</b>
-                    <p>
-                    Now, we define some macros and global variables that will be used by our code. As described earlier, headphones are
-                    used to emulate the spatial audio aspect of the game, and to achieve this we control the pins connected to the
-                    left and right channels of the headphones. Therefore, two macros named <code>AUDIO_PIN_LEFT</code> and
-                    <code>AUDIO_PIN_RIGHT</code> are created to improve the code readability and portability. Finally there is another
-                    macro named <code>DELAY_CYCLES</code> which controls the delay between the left and right audio channel. As mentioned
-                    above we encoded our audio notes into an array that contains the duty cycle information for creating a PWM signal. This
-                    array needs to be accessed by our main code to play the actual notes, so we placed the array into a header file and included
-                    that into the source file. Finally, the global variables namely <code>wav_position</code>, <code>flag_start</code>,
-                    <code>audio_note_indx</code> and <code>interception_side</code> are used by the interrupt service routines, and the
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Macros and Global
+                    Variables</b>
+                <p>
+                    Now, we define some macros and global variables that will be used by our code. As described earlier,
+                    headphones are
+                    used to emulate the spatial audio aspect of the game, and to achieve this we control the pins
+                    connected to the
+                    left and right channels of the headphones. Therefore, two macros named <code>AUDIO_PIN_LEFT</code>
+                    and
+                    <code>AUDIO_PIN_RIGHT</code> are created to improve the code readability and portability. Finally
+                    there is another
+                    macro named <code>DELAY_CYCLES</code> which controls the delay between the left and right audio
+                    channel. As mentioned
+                    above we encoded our audio notes into an array that contains the duty cycle information for creating
+                    a PWM signal. This
+                    array needs to be accessed by our main code to play the actual notes, so we placed the array into a
+                    header file and included
+                    that into the source file. Finally, the global variables namely <code>wav_position</code>,
+                    <code>flag_start</code>,
+                    <code>audio_note_indx</code> and <code>interception_side</code> are used by the interrupt service
+                    routines, and the
                     function that each of them perform will be explained in later sections.
-                    </p>
+                </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Audio PIN is to match some of the design guide shields. </span>
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Audio PIN is to match some of the design guide shields. </span>
 <span style="color: #009999">#define AUDIO_PIN_LEFT 28  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
 <span style="color: #009999">#define AUDIO_PIN_RIGHT 15  </span><span style="color: #0099FF; font-style: italic">// you can change this to whatever you like</span>
 <span style="color: #009999">#define DELAY_CYCLES 5</span>
@@ -550,24 +618,31 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
 <span style="color: #007788; font-weight: bold">int</span> flag_start <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 <span style="color: #007788; font-weight: bold">int</span> audio_note_indx <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
 <span style="color: #007788; font-weight: bold">int</span> interception_side <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
-            <p>
-            Apart from this some macros are defined for determining the static (like the x coordinate of the falling tiles in each column) 
-            coordinates for the base tile and the tiles falling in each column. The macros <code>LEFT_VERT_TILES</code>, 
-            <code>MID_VERT_TILES</code>, and <code>RIGHT_VERT_TILES</code> are defined to configure the x coordinate (the top-left vertex)
-            of the tile in the left, middle and the right side respectively.
-            </p>
+                <p>
+                    Apart from this some macros are defined for determining the static (like the x coordinate of the
+                    falling tiles in each column)
+                    coordinates for the base tile and the tiles falling in each column. The macros
+                    <code>LEFT_VERT_TILES</code>,
+                    <code>MID_VERT_TILES</code>, and <code>RIGHT_VERT_TILES</code> are defined to configure the x
+                    coordinate (the top-left vertex)
+                    of the tile in the left, middle and the right side respectively.
+                </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Define the co-ordinates for the Tiles and the Joystick controlled base.</span>
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Define the co-ordinates for the Tiles and the Joystick controlled base.</span>
 <span style="color: #009999">#define LEFT_VERT 150</span>
 <span style="color: #009999">#define MID_VERT 290</span>
 <span style="color: #009999">#define RIGHT_VERT 430</span>
@@ -578,79 +653,114 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
 
 <span style="color: #009999">#define RESTART_PIN 4</span>
 <span style="color: #009999">#define RESTART_PIN_REG ((volatile uint32_t *)(IO_BANK0_BASE + 0x010))</span>
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
 
-            <p style="margin-bottom: 1cm;">
-            A <em>restart</em> button is integrated in the game to as the name suggests restart the game once the game is over, i.e. a tile
-            is missed. This prevents the need to reset the microcontroller every time the game ends. To enable, this operation a switch or
-            push button is connected to a <code>GPIO</code> pin on the RP2040, which is polled once the game is over to determine when to
-            restart the game.
-            </p>
+                <p style="margin-bottom: 1cm;">
+                    A <em>restart</em> button is integrated in the game to as the name suggests restart the game once
+                    the game is over, i.e. a tile
+                    is missed. This prevents the need to reset the microcontroller every time the game ends. To enable,
+                    this operation a switch or
+                    push button is connected to a <code>GPIO</code> pin on the RP2040, which is polled once the game is
+                    over to determine when to
+                    restart the game.
+                </p>
             </li>
-            
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM Interrupt Handlers</b>
-                    <p>
-                    For controlling the left and right channels of the headphones, we have configured 2 separate <code>PWM</code>
-                    channels with interrupts. Following is the interrupt handler or the interrupt service routine for the <code>PWM</code> 
-                    pin that is connected to the left channel of the headphone. This function defines the tasks that need to be carried out
-                    once a single PWM cycle completes, i.e. after one data element from the array that stores the audio information is played.
-                    </p>
 
-                    <p>
-                    Here we can see that the <code>wav_position</code> variable is used to index the data array that contains our
-                    audio note. Note that each data element in the array is played 8 times, to create a persistence effect, because a simple
-                    PWM signal is very "sharp" in a sense, and this gives us a sort of smoother effect. Hence, we right shift the index by 3.
-                    The <code>WAV_DATA_LENGTH</code> variable holds the length of the array, and therefore we left shift it by 3. Keep in mind
-                    that left shifting a number increases it and right shifting a number decreases it. The <code>PWM</code> is a <em>free-running</em>
-                    module and some sort of control is needed on the audio since we only want it to play once a tile is intercepted. This is where the
-                    <code>flag_start</code> variable comes into play, it determines whether an audio needs to be played or not. If not the
-                    <code>GPIO</code> pin connected to that channel is set to a <code>LOW</code> state. A brief description of all the steps
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM Interrupt
+                    Handlers</b>
+                <p>
+                    For controlling the left and right channels of the headphones, we have configured 2 separate
+                    <code>PWM</code>
+                    channels with interrupts. Following is the interrupt handler or the interrupt service routine for
+                    the <code>PWM</code>
+                    pin that is connected to the left channel of the headphone. This function defines the tasks that
+                    need to be carried out
+                    once a single PWM cycle completes, i.e. after one data element from the array that stores the audio
+                    information is played.
+                </p>
+
+                <p>
+                    Here we can see that the <code>wav_position</code> variable is used to index the data array that
+                    contains our
+                    audio note. Note that each data element in the array is played 8 times, to create a persistence
+                    effect, because a simple
+                    PWM signal is very "sharp" in a sense, and this gives us a sort of smoother effect. Hence, we right
+                    shift the index by 3.
+                    The <code>WAV_DATA_LENGTH</code> variable holds the length of the array, and therefore we left shift
+                    it by 3. Keep in mind
+                    that left shifting a number increases it and right shifting a number decreases it. The
+                    <code>PWM</code> is a <em>free-running</em>
+                    module and some sort of control is needed on the audio since we only want it to play once a tile is
+                    intercepted. This is where the
+                    <code>flag_start</code> variable comes into play, it determines whether an audio needs to be played
+                    or not. If not the
+                    <code>GPIO</code> pin connected to that channel is set to a <code>LOW</code> state. A brief
+                    description of all the steps
                     this function performs is as follows:
-                    </p>
-                    <ul style="list-style-position: inside;">
+                </p>
+                <ul style="list-style-position: inside;">
                     <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                        So firstly, we check that we are not accessing elements that are out of the array bounds, along with that we also need to
-                        make sure that the <code>flag_start</code> variable is set indicating that an audio note needs to be played.
+                        So firstly, we check that we are not accessing elements that are out of the array bounds, along
+                        with that we also need to
+                        make sure that the <code>flag_start</code> variable is set indicating that an audio note needs
+                        to be played.
                     </li>
                     <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                        We have 6 audio notes to choose from and at a time or in a game instance only 3 are required one for each column. Now, the
-                        variable named <code>audio_note_indx</code> is used to determine which of the 3 notes needs to be accessed currently. For
-                        example we have used the <code>NA</code>, <code>DIN</code> and <code>TIN</code> notes and <code>0</code> is assigned to the
+                        We have 6 audio notes to choose from and at a time or in a game instance only 3 are required one
+                        for each column. Now, the
+                        variable named <code>audio_note_indx</code> is used to determine which of the 3 notes needs to
+                        be accessed currently. For
+                        example we have used the <code>NA</code>, <code>DIN</code> and <code>TIN</code> notes and
+                        <code>0</code> is assigned to the
                         note <code>NA</code>, <code>1</code> is assigned to the note <code>DIN</code> and so on.
-                        Some of these notes are generated using the Indian classicial musical instrument named <em>Tabla</em>.
+                        Some of these notes are generated using the Indian classicial musical instrument named
+                        <em>Tabla</em>.
                     </li>
                     <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                        Then, we check which side the tile has been intercepted on based on the value that is held in the 
+                        Then, we check which side the tile has been intercepted on based on the value that is held in
+                        the
                         <code>interception_side</code> side variable. It has a value of <code>0</code> if the tile is
                         intercepted on the left side, a value of <code>1</code> if the tile is intercepted in the middle
                         and a value of <code>2</code> if the tile has been intercepted on the right (you get the idea).
                         To emulate spatial audio the side that the tile has been hit, needs to produce a <em>louder</em>
-                        sound as compared to the opposite side, i.e. if the tile has been intercepted on the left, the left
-                        channel should have a higher amplitude as compared to the right channel. Similarly, in terms of delay,
-                        for the same example, the sound should reach the left channel first and then the right  channel.
-                        Therefore, for amplitude modulation, we add or subtract to the <code>ON</code> time present in the array,
-                        and for delay we manipulate the <code>wav_position</code> index such that the same audio note played in
+                        sound as compared to the opposite side, i.e. if the tile has been intercepted on the left, the
+                        left
+                        channel should have a higher amplitude as compared to the right channel. Similarly, in terms of
+                        delay,
+                        for the same example, the sound should reach the left channel first and then the right channel.
+                        Therefore, for amplitude modulation, we add or subtract to the <code>ON</code> time present in
+                        the array,
+                        and for delay we manipulate the <code>wav_position</code> index such that the same audio note
+                        played in
                         the left and right channel feels like it is shifted to the right in time.
                     </li>
                     <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                        Finally, in the <code>else</code> condition, when the <code>flag_start</code> variable is not set,
-                        as mentioned earlier we set the <code>GPIO</code> pin to <code>0</code> and increment our <code>audio_note_indx</code>
-                        variable untill the final note is reached, in which case it is reset to <code>0</code>. Similarly, the <code>wav_position</code>
-                        is also set to <code>0</code> here. Note that the <code>flag_start</code> variable is unset to enable that control over
+                        Finally, in the <code>else</code> condition, when the <code>flag_start</code> variable is not
+                        set,
+                        as mentioned earlier we set the <code>GPIO</code> pin to <code>0</code> and increment our
+                        <code>audio_note_indx</code>
+                        variable untill the final note is reached, in which case it is reset to <code>0</code>.
+                        Similarly, the <code>wav_position</code>
+                        is also set to <code>0</code> here. Note that the <code>flag_start</code> variable is unset to
+                        enable that control over
                         when the audio notes are played.
                     </li>
-                    </ul>
+                </ul>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler</span>() {
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler</span>() {
 
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_LEFT));    
 
@@ -705,22 +815,27 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
         }
     }
 }
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
 
-            <p>
-            A very similar approach is taken for implementing the interrupt handler for the right channel of the headphone.
-            </p>
+                <p>
+                    A very similar approach is taken for implementing the interrupt handler for the right channel of the
+                    headphone.
+                </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler_2</span>() {
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">pwm_interrupt_handler_2</span>() {
     pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_RIGHT));    
     <span style="color: #006699; font-weight: bold">if</span> (wav_position <span style="color: #555555">&lt;</span> (WAV_DATA_LENGTH<span style="color: #555555">&lt;&lt;</span><span style="color: #FF6600">3</span>) <span style="color: #555555">-</span> <span style="color: #FF6600">1</span> <span style="color: #555555">&amp;&amp;</span> flag_start <span style="color: #555555">==</span> <span style="color: #FF6600">1</span>) { 
         <span style="color: #0099FF; font-style: italic">// set pwm level </span>
@@ -773,39 +888,58 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
         }
     }
 }
-</pre></div>
+</pre>
+                                </div>
 
-                      </span></div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
 
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Processing the ADC Output</b>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Processing the ADC
+                    Output</b>
                 <p>
-                Now, let's move onto implementing the base tile, i.e. user interaction functionality. Here, we need to move the base
-                tile based on the current position of the joystick. To do this, firstly the raw <code>adc</code> value needs to be 
-                read from the <code>GPIO</code> pin. We have used <code>ADC0</code>, so the function <code>adc_select_input(0)</code>
-                will select the <code>adc</code> for us. The raw value read from the <code>adc</code> is stored in a variable named
-                <code>adc_x_raw</code> and this value is used to calliberate the joystick. A range of values is used in this process
-                for thresholding and reducing the <em>de-bouncing</em> effect. A 12-bit <code>ADC</code> is used
-                to descritize the raw values obtained from the joystick. Once the calliberation is done, the resulting value is mapped
-                to a range of 0 to 100, and based on this value thresholding is done once again to determine where the base tile needs
-                to be positioned. The <code>fillRect</code> function is a part of the <code>vga_graphics</code> library that enables us
-                to draw a filled rectangle on the screen. This is done by using two <code>for</code> loops, and calling the 
-                <code>drawPixel</code> function in each iteration, which in-turn populates or updates the <code>VGA_DATA_ARRAY</code>
-                based on the color and position of the pixel. Therefore, at the <code>fillRect</code> level, it requires the top-left
-                vertex of the rectangle that needs to be drawn as its arguments, along with the width and height of the rectangle and
-                finally the color that the rectangle needs to be filled with. At the end, we sleep for some time and return the 
-                <code>adc_x</code> variable. This will be required for determining the side on which the tile was intercepted or where
-                the base tile is in reference to the current state of the screen.
+                    Now, let's move onto implementing the base tile, i.e. user interaction functionality. Here, we need
+                    to move the base
+                    tile based on the current position of the joystick. To do this, firstly the raw <code>adc</code>
+                    value needs to be
+                    read from the <code>GPIO</code> pin. We have used <code>ADC0</code>, so the function
+                    <code>adc_select_input(0)</code>
+                    will select the <code>adc</code> for us. The raw value read from the <code>adc</code> is stored in a
+                    variable named
+                    <code>adc_x_raw</code> and this value is used to calliberate the joystick. A range of values is used
+                    in this process
+                    for thresholding and reducing the <em>de-bouncing</em> effect. A 12-bit <code>ADC</code> is used
+                    to descritize the raw values obtained from the joystick. Once the calliberation is done, the
+                    resulting value is mapped
+                    to a range of 0 to 100, and based on this value thresholding is done once again to determine where
+                    the base tile needs
+                    to be positioned. The <code>fillRect</code> function is a part of the <code>vga_graphics</code>
+                    library that enables us
+                    to draw a filled rectangle on the screen. This is done by using two <code>for</code> loops, and
+                    calling the
+                    <code>drawPixel</code> function in each iteration, which in-turn populates or updates the
+                    <code>VGA_DATA_ARRAY</code>
+                    based on the color and position of the pixel. Therefore, at the <code>fillRect</code> level, it
+                    requires the top-left
+                    vertex of the rectangle that needs to be drawn as its arguments, along with the width and height of
+                    the rectangle and
+                    finally the color that the rectangle needs to be filled with. At the end, we sleep for some time and
+                    return the
+                    <code>adc_x</code> variable. This will be required for determining the side on which the tile was
+                    intercepted or where
+                    the base tile is in reference to the current state of the screen.
                 </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">uint <span style="color: #CC00FF">act_adc</span>() {
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%">uint <span style="color: #CC00FF">act_adc</span>() {
     adc_select_input(<span style="color: #FF6600">0</span>);
     uint adc_x_raw <span style="color: #555555">=</span> adc_read();
     uint adc_x <span style="color: #555555">=</span> <span style="color: #FF6600">0</span>;
@@ -837,62 +971,87 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     sleep_ms(<span style="color: #FF6600">10</span>);
     <span style="color: #006699; font-weight: bold">return</span> adc_x;
 }
-</pre></div>
+</pre>
+                                </div>
 
-                      </span></div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
             </li>
 
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Helper Functions for Animation and Score Tracking</b>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Helper Functions for
+                    Animation and Score Tracking</b>
                 <p>
-                For a immersive and enjoyable experience the game animation needs to be engaging, lag-free and smooth. This task of making
-                the tiles fall was repetitive in the sense that every tile needed to have this animation, hence we created a helper function that
-                would avoid code repetition and improve readability. The <code>draw_fill_rect</code> function takes in an arguments the
-                parameters required for the <code>fillRect</code> function, and another argument named <code>inc_dec</code>. As explained above
-                the <code>fillRect</code> function draws rectangles on the screen, which now need to be animated. Hence, to do this, we
-                first thought of erasing the whole drawn rectangle and creating another one at a position lower than its last position to
-                give an impression that the tile is falling. However, this did not pan out well, it lead to choppy animation since erasing
-                the whole rectangle was taking up quite a bit of time. Therefore, we decided to erase a small rectangle from the top of the
-                tile and create another at the bottom of the tile, to emulate a falling tile. So, now every time the tile needs to descend
-                a small part of it is erased from the top and a similar portion is created at the bottom. This is where the <code>inc_dec</code>
-                parameter comes into play, it decides the height of the small portion that is going to be erased at the top and created at the
-                bottom.
+                    For a immersive and enjoyable experience the game animation needs to be engaging, lag-free and
+                    smooth. This task of making
+                    the tiles fall was repetitive in the sense that every tile needed to have this animation, hence we
+                    created a helper function that
+                    would avoid code repetition and improve readability. The <code>draw_fill_rect</code> function takes
+                    in an arguments the
+                    parameters required for the <code>fillRect</code> function, and another argument named
+                    <code>inc_dec</code>. As explained above
+                    the <code>fillRect</code> function draws rectangles on the screen, which now need to be animated.
+                    Hence, to do this, we
+                    first thought of erasing the whole drawn rectangle and creating another one at a position lower than
+                    its last position to
+                    give an impression that the tile is falling. However, this did not pan out well, it lead to choppy
+                    animation since erasing
+                    the whole rectangle was taking up quite a bit of time. Therefore, we decided to erase a small
+                    rectangle from the top of the
+                    tile and create another at the bottom of the tile, to emulate a falling tile. So, now every time the
+                    tile needs to descend
+                    a small part of it is erased from the top and a similar portion is created at the bottom. This is
+                    where the <code>inc_dec</code>
+                    parameter comes into play, it decides the height of the small portion that is going to be erased at
+                    the top and created at the
+                    bottom.
                 </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to abstract the animation.</span>
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to abstract the animation.</span>
 <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">draw_fill_rect</span>(<span style="color: #007788; font-weight: bold">short</span> x, <span style="color: #007788; font-weight: bold">short</span> y, <span style="color: #007788; font-weight: bold">short</span> w, <span style="color: #007788; font-weight: bold">short</span> h, <span style="color: #007788; font-weight: bold">char</span> color, <span style="color: #007788; font-weight: bold">short</span> inc_dec){
     fillRect(x,y,w,h,color);
     fillRect(x,y,w,inc_dec,<span style="color: #FF6600">0</span>);
     fillRect(x,y<span style="color: #555555">+</span>h,w,inc_dec,color);
     sleep_ms(<span style="color: #FF6600">10</span>);
 }
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
-            <p>
-            The score needs to be updated every time a tile is intercepted, to do this, firstly the entire area that shows the score is
-            erased. For displaying score we need digits, which are passed as characters to the <code>drawChar</code> function. We decided
-            to have a maximum of 3 digits to represent the score, and hence created a character array of size 3 that stores each digit of 
-            the current score which is passed as a parameter to the <code>update_score</code> function. Each digit is extracted from the 
-            current score using the <code>%</code> operation with <code>10</code>, and each digit becomes an element in the character array.
-            Then the <code>drawChar</code> function is called thrice to draw each digit on the screen.
-            </p>
+                <p>
+                    The score needs to be updated every time a tile is intercepted, to do this, firstly the entire area
+                    that shows the score is
+                    erased. For displaying score we need digits, which are passed as characters to the
+                    <code>drawChar</code> function. We decided
+                    to have a maximum of 3 digits to represent the score, and hence created a character array of size 3
+                    that stores each digit of
+                    the current score which is passed as a parameter to the <code>update_score</code> function. Each
+                    digit is extracted from the
+                    current score using the <code>%</code> operation with <code>10</code>, and each digit becomes an
+                    element in the character array.
+                    Then the <code>drawChar</code> function is called thrice to draw each digit on the screen.
+                </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to keep track of the user&#39;s score.</span>
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #0099FF; font-style: italic">// Helper function to keep track of the user&#39;s score.</span>
 <span style="color: #007788; font-weight: bold">void</span> <span style="color: #CC00FF">update_score</span>(uint score){
     fillRect(<span style="color: #FF6600">30</span>,<span style="color: #FF6600">60</span>,<span style="color: #FF6600">240</span>,<span style="color: #FF6600">20</span>,<span style="color: #FF6600">0</span>);
     <span style="color: #0099FF; font-style: italic">/* setCursor(30, 30); */</span>
@@ -905,30 +1064,41 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     drawChar(<span style="color: #FF6600">45</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">1</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
     drawChar(<span style="color: #FF6600">60</span>, <span style="color: #FF6600">60</span>, str_score[<span style="color: #FF6600">2</span>], WHITE, <span style="color: #FF6600">0</span>, <span style="color: #FF6600">2</span>);
 }
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
             </li>
 
 
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>The <code>main</code> Function</b>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>The <code>main</code>
+                    Function</b>
                 <p>
-                Let's take a look at configuring the <code>PWM</code> channels for the audio generation. The <code>GPIO</code> pins need to
-                be mapped to the <code>PWM</code> function. After that the interrupts are configured to fire when a single <code>PWM</code>
-                cycle is complete, which is determined by the <code>PWM_IRQ_WRAP</code> macro. Once that is done, each channel is assigned
-                an interrupt service routine. Finally, we get the default <code>PWM</code> config struct and update the <code>clkdiv</code> and
-                <code>wrap</code> values. The latter is set to <code>250</code> which means that the counter will go upto <code>250</code> and
-                then return to <code>0</code>. At the end, both the <code>GPIO</code> pins are set to a <code>LOW</code> state.
+                    Let's take a look at configuring the <code>PWM</code> channels for the audio generation. The
+                    <code>GPIO</code> pins need to
+                    be mapped to the <code>PWM</code> function. After that the interrupts are configured to fire when a
+                    single <code>PWM</code>
+                    cycle is complete, which is determined by the <code>PWM_IRQ_WRAP</code> macro. Once that is done,
+                    each channel is assigned
+                    an interrupt service routine. Finally, we get the default <code>PWM</code> config struct and update
+                    the <code>clkdiv</code> and
+                    <code>wrap</code> values. The latter is set to <code>250</code> which means that the counter will go
+                    upto <code>250</code> and
+                    then return to <code>0</code>. At the end, both the <code>GPIO</code> pins are set to a
+                    <code>LOW</code> state.
                 </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">int</span> <span style="color: #CC00FF">main</span>() {
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%"><span style="color: #007788; font-weight: bold">int</span> <span style="color: #CC00FF">main</span>() {
 
     <span style="color: #0099FF; font-style: italic">/////////////////////////////////// AUDIO CODE //////////////////////////////////////////</span>
     gpio_set_function(AUDIO_PIN_LEFT, GPIO_FUNC_PWM);
@@ -972,26 +1142,34 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     pwm_set_gpio_level(AUDIO_PIN_LEFT, <span style="color: #FF6600">0</span>);
     pwm_set_gpio_level(AUDIO_PIN_RIGHT, <span style="color: #FF6600">0</span>);
     <span style="color: #0099FF; font-style: italic">/////////////////////////////////// AUDIO CODE //////////////////////////////////////////</span>
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
-
- 
-            <p>
-            Now we will move onto the configuration of the <code>RESTART_PIN</code> and the joystick. For the former we first initialize the <code>GPIO</code> pin
-            connected the restart button, and then set it to <em>input</em> mode. After that, <code>stdio</code> and the <code>VGA</code> library is initialized. For
-            the joystick, the <code>adc</code> peripheral is initialized. Then the <code>GPIO</code> pin is mapped to the <code>adc</code>. Finally some variables
-            are defined which will keep track of our tiles' positions, the current score, the current joystick position, etc. At the end we initialize the score board
-            and call the <code>update_score</code> function.
-            </p>
+                </ul>
 
 
-                  <ul class="collapsible popout">
+                <p>
+                    Now we will move onto the configuration of the <code>RESTART_PIN</code> and the joystick. For the
+                    former we first initialize the <code>GPIO</code> pin
+                    connected the restart button, and then set it to <em>input</em> mode. After that, <code>stdio</code>
+                    and the <code>VGA</code> library is initialized. For
+                    the joystick, the <code>adc</code> peripheral is initialized. Then the <code>GPIO</code> pin is
+                    mapped to the <code>adc</code>. Finally some variables
+                    are defined which will keep track of our tiles' positions, the current score, the current joystick
+                    position, etc. At the end we initialize the score board
+                    and call the <code>update_score</code> function.
+                </p>
+
+
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">    gpio_init(RESTART_PIN);
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%">    gpio_init(RESTART_PIN);
     gpio_set_dir(RESTART_PIN, GPIO_IN);
 
     <span style="color: #0099FF; font-style: italic">// Initialize stdio</span>
@@ -1022,30 +1200,41 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     
     <span style="color: #0099FF; font-style: italic">// Sleep for some time, to give the user a chance to get READY.</span>
     sleep_ms(<span style="color: #FF6600">5000</span>);
-</pre></div>
+</pre>
+                                </div>
 
-                      </span></div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
 
-            <p>
-            For the actual game play, we use 2 <code>while</code> loops, where the former controls the game status, and the latter controls and animates the falling tiles.
-            Once the user misses a tile, the code exits from the inner <code>while</code> loop and polls the restart button, once the button is pressed the game re-initializes.
-            For animation the <code>y-cordinate</code> of the tiles is incremented in multiples of <code>4</code>, this multiplicative factor can be adjusted based on the 
-            speed requirement, i.e. the speed at which the tiles should fall. Therefore, the higher the multiplicative factor the faster the tiles fall. The <code>y-cordinate</code>
-            also helps us determine whether the tile has reached the bottom of the screen. Now, based on the current joystick position and the state of the screen the 
-            <code>current_score</code>, <code>flag_start</code>, and the <code>interception_side</code> variables are updated. Every time a tile is hit, it blinks with red color 
-            and then disappears. Finally, when a tile is missed the <code>drawChar</code> function is used to display "Game Over!!" on the screen and the tiles are cleared. After that
-            the game waits for the restart button to be pressed. This complete process repeats indefinitely.
-            </p>
+                <p>
+                    For the actual game play, we use 2 <code>while</code> loops, where the former controls the game
+                    status, and the latter controls and animates the falling tiles.
+                    Once the user misses a tile, the code exits from the inner <code>while</code> loop and polls the
+                    restart button, once the button is pressed the game re-initializes.
+                    For animation the <code>y-cordinate</code> of the tiles is incremented in multiples of
+                    <code>4</code>, this multiplicative factor can be adjusted based on the
+                    speed requirement, i.e. the speed at which the tiles should fall. Therefore, the higher the
+                    multiplicative factor the faster the tiles fall. The <code>y-cordinate</code>
+                    also helps us determine whether the tile has reached the bottom of the screen. Now, based on the
+                    current joystick position and the state of the screen the
+                    <code>current_score</code>, <code>flag_start</code>, and the <code>interception_side</code>
+                    variables are updated. Every time a tile is hit, it blinks with red color
+                    and then disappears. Finally, when a tile is missed the <code>drawChar</code> function is used to
+                    display "Game Over!!" on the screen and the tiles are cleared. After that
+                    the game waits for the restart button to be pressed. This complete process repeats indefinitely.
+                </p>
 
 
-                  <ul class="collapsible popout">
+                <ul class="collapsible popout">
                     <li>
-                      <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
-                      <div class="collapsible-body"><span>
-<!-- HTML generated using hilite.me --><div style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;"><pre style="margin: 0; line-height: 125%">    <span style="color: #006699; font-weight: bold">while</span>(<span style="color: #336666">true</span>) {
+                        <div class="collapsible-header"><i class="material-icons">code</i>Code</div>
+                        <div class="collapsible-body"><span>
+                                <!-- HTML generated using hilite.me -->
+                                <div
+                                    style="background: #f0f3f3; overflow:auto;width:auto;padding: 15px 0px 15px 15px;border-radius: 5px;margin-bottom: 0.1cm;margin-top: 0.1cm;">
+                                    <pre style="margin: 0; line-height: 125%">    <span style="color: #006699; font-weight: bold">while</span>(<span style="color: #336666">true</span>) {
         <span style="color: #006699; font-weight: bold">while</span> (<span style="color: #336666">true</span>){
             <span style="color: #0099FF; font-style: italic">// Get the current joystick position.</span>
             joystick_pos <span style="color: #555555">=</span> act_adc();
@@ -1174,39 +1363,43 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
         }
     <span style="color: #006699; font-weight: bold">return</span> <span style="color: #FF6600">0</span>;
 }
-</pre></div>
-                      </span></div>
+</pre>
+                                </div>
+                            </span></div>
                     </li>
-                 </ul>
+                </ul>
 
-            That brings us to the end of our project. We hope this was insightful and allows people to get a better understanding of how the RP2040 works.
+                That brings us to the end of our project. We hope this was insightful and allows people to get a better
+                understanding of how the RP2040 works.
 
             </li>
-            
+
             </li>
 
-        <h4><a name="jour" style="color: #000000;">Journey</a></h4>
+            <h4><a name="jour" style="color: #000000;">Journey</a></h4>
 
-        <h4><a name="ress" style="color: #000000;">It Actually Works!</a></h4>
-        
-        <h4><a name="refs" style="color: #000000;">References</a></h4>
+            <h4><a name="ress" style="color: #000000;">It Actually Works!</a></h4>
 
-        <ul>
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
-                <a href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>https://vanhunteradams.com/Pico/VGA/VGA.html</u></a>
-            </li>
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
-                <a href="https://github.com/rgrosset/pico-pwm-audio"><u>https://github.com/rgrosset/pico-pwm-audio</u></a>
-            </li>
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
-                <a href="http://hilite.me/"><u>http://hilite.me/</u></a>
-            </li>
-            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
-                <a href="https://materializecss.com/"><u>https://materializecss.com/</u></a>
-            </li>
-        </ul>
+            <h4><a name="refs" style="color: #000000;">References</a></h4>
 
-        <h4><a name="mtt" style="color: #000000;">Meet the Team</a></h4>
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
+                    <a
+                        href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>https://vanhunteradams.com/Pico/VGA/VGA.html</u></a>
+                </li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
+                    <a
+                        href="https://github.com/rgrosset/pico-pwm-audio"><u>https://github.com/rgrosset/pico-pwm-audio</u></a>
+                </li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
+                    <a href="http://hilite.me/"><u>http://hilite.me/</u></a>
+                </li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
+                    <a href="https://materializecss.com/"><u>https://materializecss.com/</u></a>
+                </li>
+            </ul>
+
+            <h4><a name="mtt" style="color: #000000;">Meet the Team</a></h4>
 
     </div>
 
@@ -1214,11 +1407,12 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
     <script type="text/javascript" src="js/materialize.min.js"></script>
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/c.min.js"></script> -->
     <!-- <script>hljs.highlightAll();</script> -->
-     <script>
-       document.addEventListener('DOMContentLoaded', function() {
-        var elems = document.querySelectorAll('.collapsible');
-        M.Collapsible.init(elems);
-      });
-       </script>
-  </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var elems = document.querySelectorAll('.collapsible');
+            M.Collapsible.init(elems);
+        });
+    </script>
+</body>
+
 </html>
