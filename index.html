@@ -3,6 +3,7 @@
   <head>
     <!--Import Google Font-->
     <link href="https://fonts.googleapis.com/css?family=JetBrains Mono" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <!--Import materialize.css-->
     <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="css/custom_style.css"/>
@@ -18,6 +19,50 @@
   </head>
 
   <body>
+
+    <ul class="sidenav" id="mysidenav">
+        <li>
+            <div class="user-view">
+                <div class="background">
+                    <img src="./media/pcb3.jpg">
+                </div>
+                <a href="#name"><span class="name white-text" style="font-size: 16px;">
+                        <!-- &#1F3B9; -->
+                        <em>Team Beathoven</em>
+                        <i class="material-icons" style="position: absolute; left:180px; top:47px;">gradient</i>
+                        <br>
+                        </br>
+                        <br>
+                        </br>
+                        Table of Contents
+                        <br>
+                        </br>
+                    </span></a>
+            </div>
+        </li>
+        <li><a href="#intro"><i class="material-icons">filter_1</i>Introduction</a></li>
+        <li><a href="#work"><i class="material-icons">filter_2</i>Working Principle</a></li>
+        <li><a href="#comps"><i class="material-icons">filter_3</i>Components Required</a></li>
+        <li><a href="#circ"><i class="material-icons">filter_4</i>Circuit Connections</a></li>
+        <li><a href="#firm"><i class="material-icons">filter_5</i>Firmware</a></li>
+        <li><a href="#jour"><i class="material-icons">filter_6</i>Journey</a></li>
+        <li><a href="#ress"><i class="material-icons">filter_7</i>Results</a></li>
+        <li><a href="#conc"><i class="material-icons">filter_8</i>Conclusion</a></li>
+        <li><a href="#refs"><i class="material-icons">filter_9</i>References</a></li>
+        <li><a href="#mtt"><i class="material-icons">group</i>Meet the Team</a></li>
+    </ul>
+
+    <a href="#" data-target="mysidenav" class="btn sidenav-trigger" style="position:absolute; left:20px; top:40px;background-color: #2233dd;">
+        <i class="material-icons" style="font-size: 30px;">menu</i>
+    </a>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            var side = document.querySelectorAll('.sidenav');
+            M.Sidenav.init(side)
+        })    
+    </script>
+
     <!--Main Heading-->
     <div align="center">
         <h2><b>ESE5190 Final Project</b></h2>
@@ -29,7 +74,7 @@
     <!-- <top right bottom left> -->
     <div style="padding: 25px 100px 75px 100px;" align="justify">
     
-        <h4>Introduction</h4>
+        <h4><a name="intro" style="color: #000000;">Introduction</a></h4>
         <p>
             The <em>PIO</em> module on the <em>RP2040</em> is quite a powerfull peripheral, 
             especially in terms of carrying out tasks that require precise timings and 
@@ -61,7 +106,7 @@
         </video>
         </div>
 
-        <h4>Working Principle</h4>
+        <h4><a name="work" style="color: #000000;">Working Principle</a></h4>
         
         <p>
             For a detailed understanding of every component we will look at each of the features incorporated
@@ -156,7 +201,7 @@
         
         </p>
 
-        <h4>Components Required</h4>
+        <h4><a name="comps" style="color: #000000;">Components Required</a></h4>
 
             <ul>
                 <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">RP2040 based Development Board</li>
@@ -168,9 +213,9 @@
                 <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Jumper Wires</li>
             </ul>
 
-        <h4>Circuit Connections</h4>
+            <h4><a name="circ" style="color: #000000;">Circuit Connections</a></h4>
 
-        <h4>Firmware</h4>
+            <h4><a name="firm" style="color: #000000;">Firmware</a></h4>
 
             <p>
                 Now let's take a look at the code that's driving our RP2040. Here also, we will split our code overview into
@@ -507,16 +552,85 @@ uint act_adc() {
                 </code>
             </pre>
             </li>
+
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Helper Functions for Animation and Score Tracking</b>
+                <p>
+                For a immersive and enjoyable experience the game animation needs to be engaging, lag-free and smooth. This task of making
+                the tiles fall was repetitive in the sense that every tile needed to have this animation, hence we created a helper function that
+                would avoid code repetition and improve readability. The <code>draw_fill_rect</code> function takes in an arguments the
+                parameters required for the <code>fillRect</code> function, and another argument named <code>inc_dec</code>. As explained above
+                the <code>fillRect</code> function draws rectangles on the screen, which now need to be animated. Hence, to do this, we
+                first thought of erasing the whole drawn rectangle and creating another one at a position lower than its last position to
+                give an impression that the tile is falling. However, this did not pan out well, it lead to choppy animation since erasing
+                the whole rectangle was taking up quite a bit of time. Therefore, we decided to erase a small rectangle from the top of the
+                tile and create another at the bottom of the tile, to emulate a falling tile. So, now every time the tile needs to descend
+                a small part of it is erased from the top and a similar portion is created at the bottom. This is where the <code>inc_dec</code>
+                parameter comes into play, it decides the height of the small portion that is going to be erased at the top and created at the
+                bottom.
+                </p>
+
+            <pre>
+                <code>
+// Helper function to abstract the animation.
+void draw_fill_rect(short x, short y, short w, short h, char color, short inc_dec){
+    fillRect(x,y,w,h,color);
+    fillRect(x,y,w,inc_dec,0);
+    fillRect(x,y+h,w,inc_dec,color);
+    sleep_ms(10);
+
+}           
+                </code>
+            </pre>
+            
+            <p>
+            The score needs to be updated every time a tile is intercepted, to do this, firstly the entire area that shows the score is
+            erased. For displaying score we need digits, which are passed as characters to the <code>drawChar</code> function. We decided
+            to have a maximum of 3 digits to represent the score, and hence created a character array of size 3 that stores each digit of 
+            the current score which is passed as a parameter to the <code>update_score</code> function. Each digit is extracted from the 
+            current score using the <code>%</code> operation with <code>10</code>, and each digit becomes an element in the character array.
+            Then the <code>drawChar</code> function is called thrice to draw each digit on the screen.
+            </p>
+
+            <pre>
+                <code>
+// Helper function to keep track of the user's score.
+void update_score(uint score){
+    fillRect(30,60,240,20,0);
+    /* setCursor(30, 30); */
+    /* setTextSize(3); */
+    char str_score[3] = {'0', '0', '0'};
+    str_score[2] = (score % 10) + '0';
+    str_score[1] = ((score/10) % 10) + '0';
+
+    str_score[0] = (((score/10)/10) % 10) + '0';
+    drawChar(30, 60, str_score[0], WHITE, 0, 2);
+    drawChar(45, 60, str_score[1], WHITE, 0, 2);
+    drawChar(60, 60, str_score[2], WHITE, 0, 2);
+}
+                </code>
+            </pre>
+            </li>
+
+
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>The main Function</b>
+                <p>
+                </p>
+
+            <pre>
+                <code>
+                </code>
+            </pre>
+            </li>
             
             </li>
 
-        <h4>Journey</h4>
+        <h4><a name="jour" style="color: #000000;">Journey</a></h4>
 
-        <h4>Results</h4>
+        <h4><a name="ress" style="color: #000000;">Results</a></h4>
         
-        <h4>Conclusion</h4>
+        <h4><a name="conc" style="color: #000000;">Conclusion</a></h4>
 
-        <h4>References</h4>
+        <h4><a name="refs" style="color: #000000;">References</a></h4>
 
         <ul>
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
@@ -527,7 +641,7 @@ uint act_adc() {
             </li>
         </ul>
 
-        <h4>Meet the Team</h4>
+        <h4><a name="mtt" style="color: #000000;">Meet the Team</a></h4>
 
     </div>
 
