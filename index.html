@@ -4,7 +4,7 @@
     <!--Import Google Font-->
     <link href="https://fonts.googleapis.com/css?family=JetBrains Mono" rel="stylesheet">
     <!--Import materialize.css-->
-    <!-- <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/> -->
+    <link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
     <link type="text/css" rel="stylesheet" href="css/custom_style.css"/>
 
     <style>
@@ -50,7 +50,7 @@
         <code>GitHub</code> can be accessed by clicking
         <a href="https://github.com/team-beathoven/ESE5190-Final-Project"><u>here</u></a>.</p>
 
-        <p>
+        <p style="margin-bottom: 1.5cm;">
             To get a little motivation for diving further into this, let's have a look at
             the end result.
         </p>
@@ -68,7 +68,7 @@
             one by one.
 
             <ul>
-                <li style="margin-bottom: 1cm;"><b>VGA</b>
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>VGA</b>
                 <p style="margin-bottom: 2cm;">
                     First up is the VGA display. The VGA protocol works based on a few very precisely timed signals/pulses, which
                     can be seen in the figure below.
@@ -119,7 +119,7 @@
                 </p>
                 </li>
                 
-                <li style="margin-bottom: 1cm;"><b>Joystick</b>
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Joystick</b>
                     <p style="margin-bottom: 2cm;">
                         The Josytick is a part of the user interface and enables the user to interact with the game. We used a
                         dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
@@ -141,7 +141,7 @@
                     </p>
                 </li>
                 
-                <li style="margin-bottom: 1cm;"><b>PWM</b>
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM</b>
                 <p>
                     Now we move on to the audio part of the game from the display.The RP2040 doesn't have a DAC onboard,
                     so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the notes into
@@ -159,27 +159,89 @@
         <h4>Components Required</h4>
 
             <ul>
-                <li>RP2040 based Development Board</li>
-                <li>VGA Cable</li>
-                <li>Dual-Axis Analog Joystick</li>
-                <li>Resistors - 3 (330 Ohm)</li>
-                <li>Wired Headphones</li>
-                <li>Female Audio Jack</li>
-                <li>Jumper Wires</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">RP2040 based Development Board</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">VGA Cable</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Dual-Axis Analog Joystick</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Resistors - 3 (330 Ohm)</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Wired Headphones</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Female Audio Jack</li>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Jumper Wires</li>
             </ul>
 
         <h4>Circuit Connections</h4>
 
         <h4>Firmware</h4>
 
-        <pre>
-            <code>
+            <p>
+                Now let's take a look at the code that's driving our RP2040. Here also, we will split our code overview into
+                smaller sections.
+            </p>
+
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Including the Necessary Libraries</b>
+                    <p>
+                    The following code snippet shows some of the standard as well as the hardware libraries that
+                    we are going to use in our code. The hardware libraries included are a part of the <code>PICO-SDK</code>
+                    that abstract register access commands for that particular peripheral into functions and make them
+                    available to the user. So, here we are using the <code>adc</code>, <code>pio</code>, <code>dma</code>,
+                    <code>irq</code> (interrupts) and the <code>pwm</code> peripheral. Finally, the <code>vga_graphics</code>
+                    library that we are using is created by <a href="https://vanhunteradams.com/"><u>Hunter Adams</u></a>,
+                    which can be found <a href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>here</u></a>.
+                    </p>
+                </li>
+
+            <pre>
+                <code>
+#include "vga_graphics.h"
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include "pico/stdlib.h"
+#include "hardware/pio.h"
+#include "hardware/dma.h"
+#include "hardware/adc.h"
+#include "registers.h"
+#include "hardware/irq.h"  // interrupts
+#include "hardware/pwm.h"  // pwm 
+#include "hardware/sync.h" // wait for interrupt 
+                </code>
+            </pre>
+
+
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Macros and Global Variables</b>
+                    <p>
+                    Now, we define some macros and global variables that will be used by our code. As described earlier, headphones are
+                    used to emulate the spatial audio aspect of the game, and to achieve this we control the pins connected to the
+                    left and right channels of the headphones. Therefore, two macros named <code>AUDIO_PIN_LEFT</code> and
+                    <code>AUDIO_PIN_RIGHT</code> are created to improve the code readability and portability. Finally there is another
+                    macro named <code>DELAY_CYCLES</code> which controls the delay between the left and right audio channel. As mentioned
+                    above we encoded our audio notes into an array that contains the duty cycle information for creating a PWM signal. This
+                    array needs to be accessed by our main code to play the actual notes, so we placed the array into a header file and included
+                    that into the source file. Finally, the global variables namely <code>wav_position</code>, <code>flag_start</code>,
+                    <code>audio_note_indx</code> and <code>interception_side</code> are used by the interrupt service routines, and the
+                    function that each of them perform will be explained in later sections.
+                    </p>
+
+            <pre>
+                <code>
 // Audio PIN is to match some of the design guide shields. 
 #define AUDIO_PIN_LEFT 28  // you can change this to whatever you like
 #define AUDIO_PIN_RIGHT 15  // you can change this to whatever you like
 #define DELAY_CYCLES 5
-            </code>
-        </pre>
+
+#include "audio_notes/A_major.h"
+#include "audio_notes/E_major.h"
+#include "audio_notes/B_major.h"
+#include "audio_notes/Din_2.h"
+#include "audio_notes/Tin_2.h"
+#include "audio_notes/Na_2.h"
+int wav_position = 0;
+int flag_start = 0;
+int audio_note_indx = 0;
+int interception_side = 0;
+                </code>
+            </pre>
+
+            </li>
 
         <h4>Journey</h4>
 
@@ -190,13 +252,15 @@
         <h4>References</h4>
 
         <ul>
-            <li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
                 <a href="https://vanhunteradams.com/Pico/VGA/VGA.html"><u>https://vanhunteradams.com/Pico/VGA/VGA.html</u></a>
             </li>
-            <li>
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 6px;">
                 <a href="https://github.com/rgrosset/pico-pwm-audio"><u>https://github.com/rgrosset/pico-pwm-audio</u></a>
             </li>
         </ul>
+
+        <h4>Meet the Team</h4>
 
     </div>
 
