@@ -136,7 +136,7 @@
                     can be seen in the figure below.
                 </p>
 
-                <div align="center" style="margin-bottom: 1cm" style="margin-top: 1cm;">
+                <div align="center" style="margin-bottom: 1cm;margin-top: 1cm;">
                     <img src="./media/protocol.png" width="720" height="480">
                 </div>
 
@@ -186,41 +186,31 @@
                     </li>
                 </ol>
                 </p>
-            </li>
+                </li>
+                
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Joystick</b>
+                    <p style="margin-bottom: 2cm;">
+                        The Josytick is a part of the user interface and enables the user to interact with the game. We used a
+                        dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
+                        needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the axes of the
+                        joystick.
+                    </p>
+                        
+                    <div align="center" style="margin-bottom: 1cm;" style="margin-top: 1cm;">
+                        <img src="./media/joystick.png" width="150" height="150">
+                    </div>
 
-            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
-                <b>Joystick</b>
-                <p style="margin-bottom: 2cm;">
-                    The Joystick is a part of the user interface and enables the user to interact with the game. We used
-                    a
-                    dual-axis analog joystick for our game, that spit out values based on its current position. Since,
-                    we only
-                    needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the
-                    axes of the
-                    joystick.
-                </p>
-
-                <div align="center" style="margin-bottom: 2cm;">
-                    <img src="./media/joystick.png" width="150" height="150">
-                </div>
-
-                <p>
-                    The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal
-                    obtained from
-                    the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent
-                    the
-                    analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values
-                    from
-                    the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then
-                    the
-                    data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the
-                    joystick
-                    was determined.
-                </p>
-            </li>
-
-            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
-                <b>PWM</b>
+                    <p>
+                        The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal obtained from
+                        the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent the 
+                        analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values from
+                        the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then the
+                        data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the joystick
+                        was determined.
+                    </p>
+                </li>
+                
+                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM</b>
                 <p>
                     Now we move on to the audio part of the game from the display.The RP2040 doesn't have a DAC onboard,
                     so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the
@@ -255,7 +245,62 @@
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">Jumper Wires</li>
         </ul>
 
-        <h4><a name="circ" style="color: #000000;">Circuit Connections</a></h4>
+        <h4>Circuit Connections</h4>
+        <b> VGA Connections:</b>
+
+        <div align="center" style="margin-top: 1cm;" style="margin-bottom: 1cm;">
+            <img src="./media/VGA_Connections.jpg" width="861" height="407.5">
+        </div>
+
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code> GPIO 16</code> pin of the microcontroller is connected to the <code> HSYNC</code> terminal of the VGA Plug.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GPIO 17</code> pin is connected to the <code>VSYNC</code> terminal.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GPIO 18</code> pin is connected to the <code>VGA Red</code> terminal of the Plug. A 330 Ω resistor is attached in between to reduce the voltage going to the VGA plug.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GPIO 19</code> pin is connected to the <code>VGA Green</code> terminal via a 330 Ω resistor.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>GPIO 20</code> pin is connected to the <code>VGA Blue</code> terminal via a 330 Ω resistor.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>VGA GND</code> terminal of the VGA plug is connected to the <code>GND</code> pin on the microcontroller to provide necessary grounding.
+
+            </ul>
+        
+        <div align="center" style="margin-top: 1cm;" style="margin-bottom: 1cm;">
+            <img src="./media/Circuit_Connections.jpg" width="743.5" height="436.5">
+        </div>
+
+        <b> Audio Jack Module:</b>
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GPIO 28</code> pin of the Microcontroller is connected to the <code>RNG</code> terminal of the Audio Jack module. This terminal controls the Right side of the audio channel.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module. This terminal controls the Left side of the audio channel.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module. This terminal controls the Left side of the audio channel.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The <code>GND</code> pin is connected to the <code>GND</code> terminal of the module. This provides grounding connection to the audio module.
+            </ul>
+
+        <b> Restart Switch:</b>
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    One end of the switch is connected to the <code>GPIO 4</code> pin of the microcontroller.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"> 
+                    The other end (which is not internally connected) is joined to the <code>3V3</code> pin, to provide voltage to the restart pin based on user input.
+            </ul>
+
+        <b> Joystick Module:</b>
+            <ul>
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>GPIO 26</code> pin of the Raspberry Pi Pico is connected to the <code>VRx</code> terminal of the Joystick Module. This is responsible for controlling the joystick feedback in the horizontal (x) axis.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>3V3</code> pin of the microcontroller is connected to the <code>5V</code> terminal of the Joystick Module. This provides power to the module.
+                <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    The <code>GND</code> pin of the microcontroller is connected to the <code>GND</code> terminal of the Joystick Module, which provides necessary grounding to the device.
+            </ul>
 
         <h4><a name="firm" style="color: #000000;">Firmware</a></h4>
 
@@ -1334,7 +1379,6 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
             green_indx<span style="color: #555555">++</span>;
             blue_indx<span style="color: #555555">++</span>;
         }
-        
         <span style="color: #0099FF; font-style: italic">// Erase the tiles, to clear the screen.</span>
 
         fillRect(LEFT_VERT_TILES,(blue_indx<span style="color: #555555">*</span><span style="color: #FF6600">4</span>),<span style="color: #FF6600">40</span>,<span style="color: #FF6600">100</span>,<span style="color: #FF6600">0</span>);
