@@ -242,6 +242,96 @@ int interception_side = 0;
             </pre>
 
             </li>
+            
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM Interrupt Handlers</b>
+                    <p>
+                    For controlling the left and right channels of the headphones, we have configured 2 separate <code>PWM</code>
+                    channels with interrupts. Following is the interrupt handler or the interrupt service routine for the <code>PWM</code> 
+                    pin that is connected to the left channel of the headphone. This function defines the tasks that need to be carried out
+                    once a single PWM cycle completes, i.e. after one data element from the array that stores the audio information is played.
+                    </p>
+
+                    <p>
+                    Here we can see that the <code>wav_position</code> variable is used to index the data array that contains our
+                    audio note. Note that each data element in the array is played 8 times, to create a persistence effect, because a simple
+                    PWM signal is very "sharp" in a sense, and this gives us a sort of smoother effect. Hence, we right shift the index by 3.
+                    The <code>WAV_DATA_LENGTH</code> variable holds the length of the array, and therefore we left shift it by 3. Keep in mind
+                    that left shifting a number increases it and right shifting a number decreases it. The <code>PWM</code> is a <em>free-running</em>
+                    module and some sort of control is needed on the audio since we only want it to play once a tile is intercepted. This is where the
+                    <code>flag_start</code> variable comes into play, it determines whether an audio needs to be played or not. If not the
+                    <code>GPIO</code> pin connected to that channel is set to a <code>LOW</code> state. A brief description of all the steps
+                    this function performs is as follows:
+                    </p>
+                    <ul>
+                    <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                        So firstly, we check that we are not accessing elements that are out of the array bounds, along with that we also need to
+                        make sure that the <code>flag_start</code> variable is set indicating that an audio note needs to be played.
+                    </li>
+                    <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                        We have 6 audio notes to choose from and at a time or in a game instance only 3 are required one for each column.
+                    </li>
+                    </ul>
+
+            <pre>
+                <code>
+void pwm_interrupt_handler() {
+    pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_LEFT));    
+    if (wav_position < (WAV_DATA_LENGTH<<3) - 1 && flag_start == 1) { 
+        // set pwm level 
+        // allow the pwm value to repeat for 8 cycles this is >>3 
+        if (audio_note_indx == 0) {
+            if (interception_side == 0 || interception_side == 1) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[wav_position>>3]+20);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_NA[(wav_position>>3) - DELAY_CYCLES]-20);
+
+                }
+            }
+        } else if (audio_note_indx == 1) {
+            if (interception_side == 0 || interception_side == 1) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[wav_position>>3]+20);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_DIN[(wav_position>>3) - DELAY_CYCLES]-20);
+                }
+            }
+        } else {
+            if (interception_side == 0 || interception_side == 1) {
+                pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[wav_position>>3]+20);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);
+
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_LEFT, WAV_DATA_TIN[(wav_position>>3) - DELAY_CYCLES]-20);
+                }
+            }
+        }
+        wav_position++;
+    } else {
+        // reset to start
+        pwm_set_gpio_level(AUDIO_PIN_LEFT, 0);  
+        if (flag_start == 1) {
+            wav_position = 0;
+            flag_start = 0;
+            if (audio_note_indx < 2) {
+                audio_note_indx += 1;
+            } else {
+                audio_note_indx = 0;
+            }
+        }
+    }
+}
+                </code>
+            </pre>
+
+            </li>
 
         <h4>Journey</h4>
 
