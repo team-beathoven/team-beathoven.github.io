@@ -188,31 +188,41 @@
                     </li>
                 </ol>
                 </p>
-                </li>
-                
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Joystick</b>
-                    <p style="margin-bottom: 2cm;">
-                        The Josytick is a part of the user interface and enables the user to interact with the game. We used a
-                        dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
-                        needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the axes of the
-                        joystick.
-                    </p>
-                        
-                    <div align="center" style="margin-bottom: 1cm;" style="margin-top: 1cm;">
-                        <img src="./media/joystick.png" width="150" height="150">
-                    </div>
+            </li>
 
-                    <p>
-                        The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal obtained from
-                        the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent the 
-                        analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values from
-                        the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then the
-                        data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the joystick
-                        was determined.
-                    </p>
-                </li>
-                
-                <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM</b>
+            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                <b>Joystick</b>
+                <p style="margin-bottom: 2cm;">
+                    The Josytick is a part of the user interface and enables the user to interact with the game. We used
+                    a
+                    dual-axis analog joystick for our game, that spit out values based on its current position. Since,
+                    we only
+                    needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the
+                    axes of the
+                    joystick.
+                </p>
+
+                <div align="center" style="margin-bottom: 1cm;" style="margin-top: 1cm;">
+                    <img src="./media/joystick.png" width="150" height="150">
+                </div>
+
+                <p>
+                    The joystick is connected with an onboard ADC on the RP2040, which converts the analog signal
+                    obtained from
+                    the joystick into discrete digital levels. Here, we have used a <em>12-bit</em> value to represent
+                    the
+                    analog data. Hence, the values from the joystick had a range of 0 to 4095. Once we had the values
+                    from
+                    the ADC, with some testing we caliberated the joystick based on the requirement for the game. Then
+                    the
+                    data was mapped to a range of 0 to 50. Finally, after that based on that value the position of the
+                    joystick
+                    was determined.
+                </p>
+            </li>
+
+            <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                <b>PWM</b>
                 <p>
                     Now we move on to the audio part of the game from the display.The RP2040 doesn't have a DAC onboard,
                     so we tried to use the PWM peripheral to generate audio notes. This was possible by encoding the
@@ -234,7 +244,7 @@
 
         <h4><a name="comps" style="color: #000000;">Components Required</a></h4>
 
-        <ul  style="list-style-position: inside;margin-bottom: 1.5cm;">
+        <ul style="list-style-position: inside;margin-bottom: 1.5cm;">
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">RP2040 based Development
                 Board</li>
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">VGA Cable</li>
@@ -254,55 +264,67 @@
             <img src="./media/VGA_Connections.jpg" width="861" height="407.5">
         </div>
 
-            <ul  style="list-style-position: inside;">
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code> GPIO 16</code> pin of the microcontroller is connected to the <code> HSYNC</code> terminal of the VGA Plug.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GPIO 17</code> pin is connected to the <code>VSYNC</code> terminal.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GPIO 18</code> pin is connected to the <code>VGA Red</code> terminal of the Plug. A 330 Ω resistor is attached in between to reduce the voltage going to the VGA plug.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GPIO 19</code> pin is connected to the <code>VGA Green</code> terminal via a 330 Ω resistor.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>GPIO 20</code> pin is connected to the <code>VGA Blue</code> terminal via a 330 Ω resistor.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>VGA GND</code> terminal of the VGA plug is connected to the <code>GND</code> pin on the microcontroller to provide necessary grounding.
+        <ul style="list-style-position: inside;">
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code> GPIO 16</code> pin of the microcontroller is connected to the <code> HSYNC</code> terminal of
+                the VGA Plug.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 17</code> pin is connected to the <code>VSYNC</code> terminal.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 18</code> pin is connected to the <code>VGA Red</code> terminal of the Plug. A 330 Ω
+                resistor is attached in between to reduce the voltage going to the VGA plug.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 19</code> pin is connected to the <code>VGA Green</code> terminal via a 330 Ω resistor.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 20</code> pin is connected to the <code>VGA Blue</code> terminal via a 330 Ω resistor.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>VGA GND</code> terminal of the VGA plug is connected to the <code>GND</code> pin on the
+                microcontroller to provide necessary grounding.
 
-            </ul>
-        
+        </ul>
+
         <div align="center" style="margin-top: 1cm;" style="margin-bottom: 1cm;">
             <img src="./media/Circuit_Connections.jpg" width="743.5" height="436.5">
         </div>
 
         <b> Audio Jack Module:</b>
-            <ul style="list-style-position: inside;">
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GPIO 28</code> pin of the Microcontroller is connected to the <code>RNG</code> terminal of the Audio Jack module. This terminal controls the Right side of the audio channel.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module. This terminal controls the Left side of the audio channel.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module. This terminal controls the Left side of the audio channel.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The <code>GND</code> pin is connected to the <code>GND</code> terminal of the module. This provides grounding connection to the audio module.
-            </ul>
+        <ul style="list-style-position: inside;">
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 28</code> pin of the Microcontroller is connected to the <code>RNG</code> terminal of the
+                Audio Jack module. This terminal controls the Right side of the audio channel.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module.
+                This terminal controls the Left side of the audio channel.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module.
+                This terminal controls the Left side of the audio channel.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GND</code> pin is connected to the <code>GND</code> terminal of the module. This provides
+                grounding connection to the audio module.
+        </ul>
 
         <b> Restart Switch:</b>
-            <ul style="list-style-position: inside;">
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    One end of the switch is connected to the <code>GPIO 4</code> pin of the microcontroller.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;"> 
-                    The other end (which is not internally connected) is joined to the <code>3V3</code> pin, to provide voltage to the restart pin based on user input.
-            </ul>
+        <ul style="list-style-position: inside;">
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                One end of the switch is connected to the <code>GPIO 4</code> pin of the microcontroller.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The other end (which is not internally connected) is joined to the <code>3V3</code> pin, to provide
+                voltage to the restart pin based on user input.
+        </ul>
 
         <b> Joystick Module:</b>
-            <ul style="list-style-position: inside;margin-bottom: 1.5cm;">
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>GPIO 26</code> pin of the Raspberry Pi Pico is connected to the <code>VRx</code> terminal of the Joystick Module. This is responsible for controlling the joystick feedback in the horizontal (x) axis.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>3V3</code> pin of the microcontroller is connected to the <code>5V</code> terminal of the Joystick Module. This provides power to the module.
-                <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                    The <code>GND</code> pin of the microcontroller is connected to the <code>GND</code> terminal of the Joystick Module, which provides necessary grounding to the device.
-            </ul>
+        <ul style="list-style-position: inside;margin-bottom: 1.5cm;">
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GPIO 26</code> pin of the Raspberry Pi Pico is connected to the <code>VRx</code> terminal of
+                the Joystick Module. This is responsible for controlling the joystick feedback in the horizontal (x)
+                axis.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>3V3</code> pin of the microcontroller is connected to the <code>5V</code> terminal of the
+                Joystick Module. This provides power to the module.
+            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                The <code>GND</code> pin of the microcontroller is connected to the <code>GND</code> terminal of the
+                Joystick Module, which provides necessary grounding to the device.
+        </ul>
 
         <h4><a name="firm" style="color: #000000;">Firmware</a></h4>
 
@@ -363,7 +385,8 @@
             <ul class="collapsible popout">
                 <li>
                     <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
-                        <code>HSYNC</code></div>
+                        <code>HSYNC</code>
+                    </div>
                     <div class="collapsible-body"><span>
                             <!-- HTML generated using hilite.me -->
                             <div
@@ -457,7 +480,8 @@ mov x, osr              ; Copy value from OSR to x scratch <span style="color: #
             <ul class="collapsible popout">
                 <li>
                     <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
-                        <code>VSYNC</code></div>
+                        <code>VSYNC</code>
+                    </div>
                     <div class="collapsible-body"><span>
                             <!-- HTML generated using hilite.me -->
                             <div
@@ -557,7 +581,8 @@ set y, <span style="color: #FF6600">31</span>                         ; First pa
             <ul class="collapsible popout">
                 <li>
                     <div class="collapsible-header"><i class="material-icons">code</i>PIO Assembly -&nbsp;
-                        <code>RGB</code></div>
+                        <code>RGB</code>
+                    </div>
                     <div class="collapsible-body"><span>
                             <!-- HTML generated using hilite.me -->
                             <div
@@ -1432,6 +1457,35 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
             </li>
 
             <h4><a name="jour" style="color: #000000;">Journey</a></h4>
+            <p>
+                First off , we tried implementing an animation of a single tile using the <code>fillRect</code>
+                function which was defined in the <code>vga_graphics</code> library. This function uses the
+                <code>drawPixel</code> function. The <code>fillRect</code> uses the coordinates of the top left vertex
+                of the rectangle to do so. We began by trying to draw a single rectangle and getting it to move
+                horizontally. We did this by drawing a rectangle and then erasing it. We then drew another rectangle by
+                setting the top left vertex coordinate as the coordinate of the top right vertex of the previous
+                rectangle that we just erased . We repeated this process along the entire X axis to make it look like
+                that the tile was moving horizontally across the X axis. Once we were able to do this , we tried to
+                implement the tiles moving top to down since that was the use case for our project.
+            </p>
+
+            <p>
+                Once we were able to replicate a pattern of a falling tile
+                , we did this for 3 columns since we have implemented 3 columns in our game. We then had to create our
+                base tile at the bottom of the screen that we would use to intercept the falling tiles. Once we had the
+                base tile and the falling tiles aspect of the game set up exactly how we wanted , we implemented a score
+                tracker that would keep incrementing as and when you intercept tiles and would end the game if you miss
+                a certain tile. </p>
+
+            <p>
+                We then tried to find ways of implementing spatial audio where a more prominent sound would be played on
+                the left or the right channel of the headphone depending on the side of the screen that the tile had
+                been intercepted. Since the RP2040 does not have a Digital to Analog converter, we tried using the PWM
+                peripheral to produce audio notes. We referred to a piece of code that takes <code>.wav</code> files as
+                input and converts it into PWM data. Initially , we played around with the amplitudes of the audio notes
+                to bring spatial audio in effect , however , the difference in audio levels was not very significant. To
+                overcome this , we then implemented delays on top of amplitude reduction to bring about a perciptible
+                difference in the right and left channels of the headphone. </p>
 
             <h4><a name="ress" style="color: #000000;">It Actually Works!</a></h4>
 
@@ -1460,24 +1514,30 @@ wait <span style="color: #FF6600">1</span> irq <span style="color: #FF6600">1</s
                 <img src="./media/mtt_2.png" width="638px" height="359px">
             </div>
 
-        <div align="center">
-            <h6><b>Arnav Gadre &emsp; &emsp; Siddhant Mathur &emsp; &emsp; Ruturaj A. Nanoti</b></h6>
-        </div>
-        <div>
-        <a href="https://www.linkedin.com/in/arnavgadre/" class="fa fa-linkedin-square" style="font-size:36px;display: inline-block;padding-left: 370px;"></a>
-        <a href="https://github.com/arnavgadre" class="fa fa-github" style="font-size:36px;color: purple;"></a>
-        <a href="mailto:arnavgadre@seas.upenn.edu" class="fa fa-envelope" style="font-size:36px;color: black;"></a>
+            <div align="center">
+                <h6><b>Arnav Gadre &emsp; &emsp; Siddhant Mathur &emsp; &emsp; Ruturaj A. Nanoti</b></h6>
+            </div>
+            <div>
+                <a href="https://www.linkedin.com/in/arnavgadre/" class="fa fa-linkedin-square"
+                    style="font-size:36px;display: inline-block;padding-left: 370px;"></a>
+                <a href="https://github.com/arnavgadre" class="fa fa-github" style="font-size:36px;color: purple;"></a>
+                <a href="mailto:arnavgadre@seas.upenn.edu" class="fa fa-envelope"
+                    style="font-size:36px;color: black;"></a>
 
-        <a href="https://www.linkedin.com/in/siddhantmathur14/" class="fa fa-linkedin-square" style="font-size:36px;display: inline-block;padding-left: 75px;"></a>
-        <a href="https://github.com/Siddmathur14" class="fa fa-github" style="font-size:36px;color: purple;"></a>
-        <a href="mailto:siddm14@seas.upenn.edu" class="fa fa-envelope" style="font-size:36px;color: black;"></a>
+                <a href="https://www.linkedin.com/in/siddhantmathur14/" class="fa fa-linkedin-square"
+                    style="font-size:36px;display: inline-block;padding-left: 75px;"></a>
+                <a href="https://github.com/Siddmathur14" class="fa fa-github"
+                    style="font-size:36px;color: purple;"></a>
+                <a href="mailto:siddm14@seas.upenn.edu" class="fa fa-envelope" style="font-size:36px;color: black;"></a>
 
-        <a href="https://www.linkedin.com/in/ruturajn/" class="fa fa-linkedin-square" style="font-size:36px;display: inline-block;padding-left: 100px;"></a>
-        <a href="https://github.com/Ruturajn" class="fa fa-github" style="font-size:36px;color: purple;"></a>
-        <a href="mailto:ruturajn@seas.upenn.edu" class="fa fa-envelope" style="font-size:36px;color: black;"></a>
-        
-        </div>
-        
+                <a href="https://www.linkedin.com/in/ruturajn/" class="fa fa-linkedin-square"
+                    style="font-size:36px;display: inline-block;padding-left: 100px;"></a>
+                <a href="https://github.com/Ruturajn" class="fa fa-github" style="font-size:36px;color: purple;"></a>
+                <a href="mailto:ruturajn@seas.upenn.edu" class="fa fa-envelope"
+                    style="font-size:36px;color: black;"></a>
+
+            </div>
+
 
     </div>
 
