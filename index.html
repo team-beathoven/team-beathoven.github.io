@@ -85,31 +85,31 @@
                     in. All of this is controlled by the PIO module on the RP2040, which runs at a clock speed of 25MHz.The whole 
                     protocol can be explained in brief as follows:
 
-                    <ol>
-                        <li> 
+                    <ol style="list-style-position: inside;">
+                        <li style="list-style-position: outside;margin-left: 20px;"> 
                             Our display has a resolution of 640x480, as stated earlier, and hence the <code>HSYNC</code>
                             signal as the name suggests (<em>Horizontal Sync</em>) needs to be high for 640 clock cycles.
                         </li>
 
-                        <li>
+                        <li style="list-style-position: outside;margin-left: 20px;">
                             Our <code>HSYNC</code> signal is active-high and starts out as <code>HIGH</code>. During this
                             time, the <code>R</code>, <code>G</code> and <code>B</code> pins are set to varying volatages
                             between 0 and 0.7V, in every clock cycle.
                         </li>
 
-                        <li>
+                        <li style="list-style-position: outside;margin-left: 20px;">
                             Once a row of pixels is complete, the <code>HSYNC</code> enters into its <em>front porch</em>, for
                             which it goes to a <code>LOW</code> state for 16 clock cycles. Similarly it then moves onto the
                             <em>sync Pulse</em> and <em>back porch</em> part of the protocol and behaves as shown in the figure
                             above.
                         </li>
 
-                        <li>
+                        <li style="list-style-position: outside;margin-left: 20px;">
                             On the other hand as stated earlier the <code>VSYNC</code> (vertical sync) controls the frame. So,
                             during the whole <code>HSYNC</code> operation, the <code>VSYNC</code> remains <code>HIGH</code>.
                         </li>
 
-                        <li>
+                        <li style="list-style-position: outside;margin-left: 20px;">
                             The <code>VSYNC</code> signal also has the <em>front porch</em>, <em>sync pulse</em>, and the 
                             <em>back porch</em> part to it, and behaves based on the diagram displayed above, i.e. it stays
                             at a <code>HIGH</code> state during its <em>front porch</em> for 10 lines (time needed for the
@@ -121,7 +121,7 @@
                 
                 <li style="margin-bottom: 1cm;list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Joystick</b>
                     <p style="margin-bottom: 2cm;">
-                        The Josytick is a part of the user interface and enables the user to interact with the game. We used a
+                        The Joystick is a part of the user interface and enables the user to interact with the game. We used a
                         dual-axis analog joystick for our game, that spit out values based on its current position. Since, we only
                         needed a single DOF (Degree of freedom) for playing the game, we did not need data from both the axes of the
                         joystick.
@@ -241,6 +241,35 @@ int interception_side = 0;
                 </code>
             </pre>
 
+            <p>
+            Apart from this some macros are defined for determining the static (like the x coordinate of the falling tiles in each column) 
+            coordinates for the base tile and the tiles falling in each column. The macros <code>LEFT_VERT_TILES</code>, 
+            <code>MID_VERT_TILES</code>, and <code>RIGHT_VERT_TILES</code> are defined to configure the x coordinate (the top-left vertex)
+            of the tile in the left, middle and the right side respectively.
+            </p>
+
+            <pre>
+                <code>
+// Define the co-ordinates for the Tiles and the Joystick controlled base.
+#define LEFT_VERT 150
+#define MID_VERT 290
+#define RIGHT_VERT 430
+
+#define LEFT_VERT_TILES 160
+#define MID_VERT_TILES 300
+#define RIGHT_VERT_TILES 440
+
+#define RESTART_PIN 4
+#define RESTART_PIN_REG ((volatile uint32_t *)(IO_BANK0_BASE + 0x010))
+                </code>
+            </pre>
+
+            <p style="margin-bottom: 1cm;">
+            A <em>restart</em> button is integrated in the game to as the name suggests restart the game once the game is over, i.e. a tile
+            is missed. This prevents the need to reset the microcontroller every time the game ends. To enable, this operation a switch or
+            push button is connected to a <code>GPIO</code> pin on the RP2040, which is polled once the game is over to determine when to
+            restart the game.
+            </p>
             </li>
             
             <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>PWM Interrupt Handlers</b>
@@ -262,13 +291,37 @@ int interception_side = 0;
                     <code>GPIO</code> pin connected to that channel is set to a <code>LOW</code> state. A brief description of all the steps
                     this function performs is as follows:
                     </p>
-                    <ul>
-                    <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
+                    <ul style="list-style-position: inside;">
+                    <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
                         So firstly, we check that we are not accessing elements that are out of the array bounds, along with that we also need to
                         make sure that the <code>flag_start</code> variable is set indicating that an audio note needs to be played.
                     </li>
-                    <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;">
-                        We have 6 audio notes to choose from and at a time or in a game instance only 3 are required one for each column.
+                    <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                        We have 6 audio notes to choose from and at a time or in a game instance only 3 are required one for each column. Now, the
+                        variable named <code>audio_note_indx</code> is used to determine which of the 3 notes needs to be accessed currently. For
+                        example we have used the <code>NA</code>, <code>DIN</code> and <code>TIN</code> notes and <code>0</code> is assigned to the
+                        note <code>NA</code>, <code>1</code> is assigned to the note <code>DIN</code> and so on.
+                        Some of these notes are generated using the Indian classicial musical instrument named <em>Tabla</em>.
+                    </li>
+                    <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                        Then, we check which side the tile has been intercepted on based on the value that is held in the 
+                        <code>interception_side</code> side variable. It has a value of <code>0</code> if the tile is
+                        intercepted on the left side, a value of <code>1</code> if the tile is intercepted in the middle
+                        and a value of <code>2</code> if the tile has been intercepted on the right (you get the idea).
+                        To emulate spatial audio the side that the tile has been hit, needs to produce a <em>louder</em>
+                        sound as compared to the opposite side, i.e. if the tile has been intercepted on the left, the left
+                        channel should have a higher amplitude as compared to the right channel. Similarly, in terms of delay,
+                        for the same example, the sound should reach the left channel first and then the right  channel.
+                        Therefore, for amplitude modulation, we add or subtract to the <code>ON</code> time present in the array,
+                        and for delay we manipulate the <code>wav_position</code> index such that the same audio note played in
+                        the left and right channel feels like it is shifted to the right in time.
+                    </li>
+                    <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
+                        Finally, in the <code>else</code> condition, when the <code>flag_start</code> variable is not set,
+                        as mentioned earlier we set the <code>GPIO</code> pin to <code>0</code> and increment our <code>audio_note_indx</code>
+                        variable untill the final note is reached, in which case it is reset to <code>0</code>. Similarly, the <code>wav_position</code>
+                        is also set to <code>0</code> here. Note that the <code>flag_start</code> variable is unset to enable that control over
+                        when the audio notes are played.
                     </li>
                     </ul>
 
@@ -331,6 +384,130 @@ void pwm_interrupt_handler() {
                 </code>
             </pre>
 
+            <p>
+            A very similar approach is taken for implementing the interrupt handler for the right channel of the headphone.
+            </p>
+
+            <pre>
+                <code>
+void pwm_interrupt_handler_2() {
+    pwm_clear_irq(pwm_gpio_to_slice_num(AUDIO_PIN_RIGHT));    
+    if (wav_position < (WAV_DATA_LENGTH<<3) - 1 && flag_start == 1) { 
+
+        // set pwm level 
+        // allow the pwm value to repeat for 8 cycles this is >>3 
+        if (audio_note_indx == 0) {
+            if (interception_side == 1 || interception_side == 2) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[wav_position>>3]);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_NA[(wav_position>>3) - DELAY_CYCLES]-80);
+                }
+            }
+        } else if (audio_note_indx == 1) {
+            if (interception_side == 1 || interception_side == 2) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[wav_position>>3]);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_DIN[(wav_position>>3) - DELAY_CYCLES]-80);
+                }
+            }
+        } else {
+            if (interception_side == 1 || interception_side == 2) {
+                pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[wav_position>>3]);
+            } else {
+                if (((wav_position>>3) - DELAY_CYCLES) <= 0) {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);
+                } else {
+                    pwm_set_gpio_level(AUDIO_PIN_RIGHT, WAV_DATA_TIN[(wav_position>>3) - DELAY_CYCLES]-80);
+                }
+            }
+        }
+        wav_position++;
+    } else {
+        // reset to start
+        pwm_set_gpio_level(AUDIO_PIN_RIGHT, 0);  
+        if (flag_start == 1) {
+            wav_position = 0;
+
+            flag_start = 0;
+            if (audio_note_indx < 2) {
+                audio_note_indx += 1;
+            } else {
+                audio_note_indx = 0;
+            }
+        }
+    }
+}
+                </code>
+            </pre>
+
+
+            <li style="list-style-type: initial;list-style-position: inside;padding-left: 5px;"><b>Processing the ADC Output</b>
+                <p>
+                Now, let's move onto implementing the base tile, i.e. user interaction functionality. Here, we need to move the base
+                tile based on the current position of the joystick. To do this, firstly the raw <code>adc</code> value needs to be 
+                read from the <code>GPIO</code> pin. We have used <code>ADC0</code>, so the function <code>adc_select_input(0)</code>
+                will select the <code>adc</code> for us. The raw value read from the <code>adc</code> is stored in a variable named
+                <code>adc_x_raw</code> and this value is used to calliberate the joystick. A range of values is used in this process
+                for thresholding and reducing the <em>de-bouncing</em> effect. A 12-bit <code>ADC</code> is used
+                to descritize the raw values obtained from the joystick. Once the calliberation is done, the resulting value is mapped
+                to a range of 0 to 100, and based on this value thresholding is done once again to determine where the base tile needs
+                to be positioned. The <code>fillRect</code> function is a part of the <code>vga_graphics</code> library that enables us
+                to draw a filled rectangle on the screen. This is done by using two <code>for</code> loops, and calling the 
+                <code>drawPixel</code> function in each iteration, which in-turn populates or updates the <code>VGA_DATA_ARRAY</code>
+                based on the color and position of the pixel. Therefore, at the <code>fillRect</code> level, it requires the top-left
+                vertex of the rectangle that needs to be drawn as its arguments, along with the width and height of the rectangle and
+                finally the color that the rectangle needs to be filled with. At the end, we sleep for some time and return the 
+                <code>adc_x</code> variable. This will be required for determining the side on which the tile was intercepted or where
+                the base tile is in reference to the current state of the screen.
+                </p>
+
+            <pre>
+                <code>
+// Define a function to draw the base tile, based on the current joystick
+// position.
+uint act_adc() {
+    adc_select_input(0);
+    uint adc_x_raw = adc_read();
+    uint adc_x = 0;
+
+    if (adc_x_raw > 1600 && adc_x_raw < 2400) {
+        adc_x = 2048;
+    } else {
+        adc_x = adc_x_raw;
+    }
+
+    adc_x = (adc_x * 100) / 4095;
+
+    printf("%d, %d\n", adc_x, adc_x_raw);
+    
+
+    if (adc_x == 50){
+        fillRect(MID_VERT,460,60,20,WHITE);
+        fillRect(LEFT_VERT,460,60,20,0);
+        fillRect(RIGHT_VERT,460,60,20,0);
+    }
+    else if (adc_x > 50) {
+        fillRect(RIGHT_VERT,460,60,20,WHITE);
+        fillRect(LEFT_VERT,460,60,20,0);
+        fillRect(MID_VERT,460,60,20,0);
+    }else if (adc_x < 50) {
+        fillRect(LEFT_VERT,460,60,20,WHITE);
+        fillRect(MID_VERT,460,60,20,0);
+        fillRect(RIGHT_VERT,460,60,20,0);
+    }
+    sleep_ms(10);
+    return adc_x;
+}
+                </code>
+            </pre>
+            </li>
+            
             </li>
 
         <h4>Journey</h4>
