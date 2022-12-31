@@ -61,13 +61,15 @@
     </ul>
 
     <a href="#" data-target="mysidenav" class="btn sidenav-trigger"
-        style="position:absolute; left:20px; top:40px;background-color: #007FFF;">
+        style="position: sticky; left:20px; top:40px;background-color: #007FFF;">
         <i class="material-icons" style="font-size: 30px;">menu</i>
     </a>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var side = document.querySelectorAll('.sidenav');
+            var side = document.querySelectorAll('.sidenav', {
+                isFixed: false
+            });
             M.Sidenav.init(side)
         })    
     </script>
@@ -273,7 +275,7 @@
 
         <ul style="list-style-position: inside;">
             <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                The <code> GPIO 16</code> pin of the microcontroller is connected to the <code> HSYNC</code> terminal of
+                The <code> GPIO 16</code> pin of the microcontroller is connected to the <code>HSYNC</code> terminal of
                 the VGA Plug.
             <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
                 The <code>GPIO 17</code> pin is connected to the <code>VSYNC</code> terminal.
@@ -299,9 +301,6 @@
             <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
                 The <code>GPIO 28</code> pin of the Microcontroller is connected to the <code>RNG</code> terminal of the
                 Audio Jack module. This terminal controls the Right side of the audio channel.
-            <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
-                The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module.
-                This terminal controls the Left side of the audio channel.
             <li style="list-style-type: initial;list-style-position: outside;margin-left: 20px;">
                 The <code>GPIO 15</code> pin is connected to the <code>TIP</code> terminal of the Audio Jack module.
                 This terminal controls the Left side of the audio channel.
